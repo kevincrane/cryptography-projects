@@ -1,0 +1,5 @@
+# Ignore generated .o files
+*.o
+
+# Ignore main binary files
+hw?
