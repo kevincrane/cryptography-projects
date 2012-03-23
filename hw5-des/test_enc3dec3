@@ -1,0 +1,40 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw5
+
+# Boilerplate constants
+set key=0123456789abcdef
+set key3old=c78a1fab0218773dea4a2e65e999e2557637d934f0841173
+set key3=1596369d5aa562355453ae44101c2614c729a00607319591
+
+#
+#(D) encrypt3/decrypt3 (+20 points)
+#
+# 1. encrypt3 (+10 points, +1 for each correct answer)
+# 
+/bin/rm -f fout.?.enc
+#
+# use various tablefile to 3des encrypt f32
+#
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	(./hw5 encrypt3 -k=$key3 -t=$srcdir/f$f $srcdir/f32 > fout.$f.enc) >& /dev/null
+	echo "==> $srcdir/f32.$f.enc"
+	diff fout.$f.enc $srcdir/f32.$f.enc
+end
+/bin/rm -f fout.?.enc
+
+#
+# 2. decrypt3 (+10 points, +1 for each correct answer)
+/bin/rm -f fout.?.dat
+#
+# use various tablefile to 3des decrypt
+#
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	(./hw5 decrypt3 -k=$key3 -t=$srcdir/f$f $srcdir/f32.$f.enc > fout.$f.dat) >& /dev/null
+	echo "==> fout.$f.dat"
+	diff fout.$f.dat $srcdir/f34
+end
+/bin/rm -f fout.?.dat

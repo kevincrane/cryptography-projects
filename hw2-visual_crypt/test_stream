@@ -1,0 +1,38 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw2
+
+# Boilerplate constants
+set p0="yesnomaybe"
+set p1="cs531-f09"
+set p2="vcrypto"
+set p3="password"
+set p4="emptyString"
+set p5="applied"
+set p6="cryptography"
+set p7="publickey"
+
+set len0=320
+set len1=241
+set len2=202
+set len3=803
+set len4=724
+
+#
+# stream: +10 points (2 points for each correct answer)
+#
+rm bar-s?.stream
+
+./hw2 stream -p="$p0" -l=$len0 > bar-s0.stream
+./hw2 stream -p="$p1" -l=$len1 > bar-s1.stream
+./hw2 stream -p="$p2" -l=$len2 > bar-s2.stream
+./hw2 stream -p="$p3" -l=$len3 > bar-s3.stream
+./hw2 stream -p="$p4" -l=$len4 > bar-s4.stream
+
+foreach f (0 1 2 3 4)
+	echo "==>$srcdir/s$f.stream"
+	diff $srcdir/bar-s$f.stream bar-s$f.stream
+end

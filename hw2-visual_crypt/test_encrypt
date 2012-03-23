@@ -1,0 +1,42 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw2
+
+# Boilerplate constants
+set p0="yesnomaybe"
+set p1="cs531-f09"
+set p2="vcrypto"
+set p3="password"
+set p4="emptyString"
+set p5="applied"
+set p6="cryptography"
+set p7="publickey"
+
+set len0=320
+set len1=241
+set len2=202
+set len3=803
+set len4=724
+
+#
+# encrypt: +24 points (3 points for each correct answer)
+#
+/bin/rm bar*.pbm
+
+cat $srcdir/small.pbm | ./hw2 encrypt -p="$p0" -out=bar-small
+cat $srcdir/money.pbm | ./hw2 encrypt -p="$p1" -out=bar-money
+cat $srcdir/bowtie.pbm | ./hw2 encrypt -p="$p2" -out=bar-bowtie
+cat $srcdir/cross.pbm | ./hw2 encrypt -p="$p3" -out=bar-cross
+./hw2 encrypt -p="$p4" -out=bar-hello $srcdir/hello.pbm
+./hw2 encrypt -p="$p5" -out=bar-nouturn $srcdir/nouturn.pbm
+./hw2 encrypt -p="$p6" -out=bar-stop $srcdir/stop.pbm
+./hw2 encrypt -p="$p7" -out=bar-viterbi $srcdir/viterbi.pbm
+
+foreach f (small money bowtie cross hello nouturn stop viterbi)
+	echo "==> $srcdir/$f.pbm"
+	diff $srcdir/bar-$f.1.pbm bar-$f.1.pbm 
+	diff $srcdir/bar-$f.2.pbm bar-$f.2.pbm 
+end

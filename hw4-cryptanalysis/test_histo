@@ -1,0 +1,40 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw4
+
+# Boilerplate constants
+set len1=11
+set len2=37
+set len3=23
+set len4=54
+set len5=7
+set len6=101
+set len7=193
+
+#
+# histo (+20 points, +2 for each correct answer)
+# Note: If there are ties in the histogram, it's okay to have different order.
+#
+
+/bin/rm -f f?.histo.?
+
+./hw4 histo -t=5 -i=1 $srcdir/f1.ct > f1.histo.1
+./hw4 histo -t=6 -i=3 $srcdir/f2.ct > f2.histo.1
+./hw4 histo -t=3 -i=3 $srcdir/f3.ct > f3.histo.1
+./hw4 histo -t=4 -i=2 $srcdir/f4.ct > f4.histo.1
+./hw4 histo -t=7 -i=2 $srcdir/f5.ct > f5.histo.1
+cat $srcdir/f1.ct | ./hw4 histo -t=7 -i=7 > f1.histo.2
+cat $srcdir/f2.ct | ./hw4 histo -t=8 -i=5 > f2.histo.2
+cat $srcdir/f3.ct | ./hw4 histo -t=4 -i=4 > f3.histo.2
+cat $srcdir/f4.ct | ./hw4 histo -t=5 -i=3 > f4.histo.2
+cat $srcdir/f5.ct | ./hw4 histo -t=6 -i=1 > f5.histo.2
+
+foreach f (1 2 3 4 5)
+	foreach x (1 2)
+		echo "==> $srcdir/f$f.histo.$x "
+		diff $srcdir/f$f.histo.$x f$f.histo.$x
+	end
+end

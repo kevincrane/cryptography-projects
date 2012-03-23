@@ -1,0 +1,46 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw5
+
+# Boilerplate constants
+
+
+#
+# tablecheck (+20 points)
+#
+#	1. good tablefile (+10 points, +1 points for each correct case)
+#
+
+#
+# should not produce any output
+#
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	echo "==> $srcdir/f$f"
+	./hw5 tablecheck -t=$srcdir/f$f
+end
+
+#
+# 2. bad tablefile (+10 points, +1 points for each correct case)
+# 
+
+#
+# each should produce a reasonable error message
+# here are what can be reported (may be reported in other manners):
+#   f10: (PC2) the value 30 in the PC2 table occur too many times
+#   f11: (PC1) the value 21 in the PC1 table did not occur
+#   f12: (  V) the value 1 in the V table did not occur 4 times
+#   f13: (  V) the value 2 in the V table did not occur 12 times
+#   f14: ( S8) 63 values read while 64 was expected
+#   f15: ( S4) the value 10 in the S4 table did not occur 4 times
+#   f16: ( S1) the value 11 in the S1 table did not occur 4 times
+#   f17: (  P) 34 values read while 32 was expected
+#   f18: (  E) the value 16 in the E table occur too many times
+#   f19: ( IP) too few values read
+#
+foreach f (10 11 12 13 14 15 16 17 18 19)
+	echo "==> $srcdir/f$f"
+	./hw5 tablecheck -t=$srcdir/f$f
+end

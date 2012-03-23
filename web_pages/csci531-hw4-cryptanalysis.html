@@ -1,0 +1,594 @@
+<HTML>
+<HEAD>
+<TITLE>Homework #4 - CSCI 531, Spring 2012</TITLE>
+<LINK HREF="../../cs531bc.css" REL="stylesheet" TYPE="text/css">
+<LINK REV="made" HREF="mailto:bill.cheng@acm.org"></HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#D02090" VLINK="#996600" ALINK="#990000">
+
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD ALIGN=CENTER VALIGN=TOP WIDTH=112>
+    <!-- COL 1, should be identical to all other pages here -->
+    <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=113>
+    <TR><TD ALIGN=CENTER VALIGN=TOP WIDTH=112>
+        &nbsp;
+        </TD>
+    </TR>
+    <TR><TD ALIGN=CENTER VALIGN=TOP WIDTH=112>
+        <A HREF="http://www.cs.usc.edu/"><IMG SRC="../../images/usctommy.gif"
+            ALT="USC CSD Home" BORDER=0></A>
+        <!-- BR>&nbsp;<BR -->
+        <!-- IMG SRC="images/small-uc.gif" BORDER=0 -->
+        </TD>
+    </TR>
+    </TABLE>
+    </TD>
+    <!-- TD ALIGN=LEFT VALIGN=TOP WIDTH=13 -->
+    <!-- COL 2, should be identical to all other pages here -->
+        <!-- IMG SRC="images/spacer.gif" HEIGHT=1 WIDTH=13 -->
+    <!-- /TD -->
+    <TD ALIGN=LEFT VALIGN=TOP>
+    <!-- COL 3, every page should be different -->
+        <TABLE BORDER=0>
+        <!-- Page Header -->
+        <TR><TD ALIGN=LEFT VALIGH=TOP>
+                <A HREF="../../">Spring 2012<A>
+            </TD>
+            <TD ALIGN=RIGHT VALIGH=TOP>
+                <A HREF="../../">CSCI 531</A><BR>
+            </TD>
+        </TR>
+        <BR>
+        <!-- Page Title -->
+        <TR><TD COLSPAN=3 ALIGN=CENTER>
+                <H2>Homework #4</H2>
+                <H4>(100 points total)</H4>
+                <H2>Cryptanalysis</H2>
+                <B><I>Due 11:45PM
+                3/2/2012 (firm)</I></B>
+                <!--
+                <H3><FONT COLOR="red"><I>(Under Construction -
+                    Anything Can Change without Notice)</I></FONT></H3>
+                  -->
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="intro"><B>Assignment</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+The purpose of this assignment is to get you familiar with
+a classical polyalphabetic substitution cipher and the
+cryptanalysis of it.
+
+Please see pages 40-49 of the Classical Ciphers and Cryptanalysis
+<A HREF="../../lectures.html#tentative">lecture slides</A> or section
+7.3.5 on pages 248-250 of the
+<A HREF="http://www.cacr.math.uwaterloo.ca/hac/">
+textbook (Handbook of Applied Cryptography)</A> (in Chapter 7).
+
+<P>
+
+<A HREF="../../submit.html">Electronic submissions</A> only.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="compile"><B>Compiling</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+Please use a <TT>Makefile</TT> so that when the grader simply enters:
+    <PRE>
+    make hw4</PRE>
+an executable named <B>hw4</B> is created.
+(Minor variation on the <TT>make</TT> command is allowed.)
+Please make sure that your submission conforms to
+<A HREF="../../makefile.html#requirements">other
+general compilation requirements</A>.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="syntax"><B>Commandline Syntax & Program
+                Output</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+The commandline syntax for <B>hw4</B> is as follows:
+
+<PRE>
+    <B>hw4</B> <B>keygen</B> <B>-t=</B>period
+    <B>hw4</B> <B>crypt</B> <B>-k=</B>keyfile [file]
+    <B>hw4</B> <B>invkey</B> keyfile
+    <B>hw4</B> <B>histo</B> <B>-t=</B>period <B>-i=</B>which [file]
+    <B>hw4</B> <B>solve</B> <B>-l=</B>max_t file</PRE>
+
+<P>
+
+Square bracketed items are optional.
+You must follow the UNIX convention that <B>commandline options</B>
+can come in any order.  (Note: a <B>commandline option</B> is a
+commandline argument that begins with a <B>-</B> character in a
+commandline syntax specification.)
+If an input file is not specified, your program should
+read from <TT>stdin</TT>.
+Output of your program must go to <TT>stdout</TT> and
+error messages must go to <TT>stderr</TT>.
+
+<P>
+
+The meaning of the commands are:
+
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>keygen</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Generate a keyfile with a specified <TT>period</TT>
+                       to be used by the
+                       <A HREF="#vigenere">full Vigen&#232;re cipher</A>
+                       (with polyalphabetic substitution).
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>crypt</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Encrypts (or decrypts) an input ASCII text file with
+                       the keys specified in <TT>keyfile</TT>.
+                       The output is an ASCII text file encrypted (or decrypted)
+                       using a <A HREF="#vigenere">full Vigen&#232;re cipher</A>
+                       (with polyalphabetic substitution).
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>invkey</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Create an inverse permutation key file from
+                       <TT>keyfile</TT>.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>histo</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Produce a histogram of ciphertext character frequencies
+                       assuming the ciphertext is produced by a
+                       polyalphabetic substitution cipher with period
+                       equals <TT>period</TT>.  <TT>which</TT> specifies
+                       a one-based index for the alphabets.  The output
+                       must be sorted according to the frequencies of the
+                       ciphertext characters in descending order.
+                       Please do not
+                       consider any characters that is not a lowercase English
+                       character (i.e., between <TT>'a'</TT> and <TT>'z'</TT>,
+                       inclusive).
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>solve</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Apply the Method of Kasiski and use Index of Coincidence
+                       in order to determine the period of a ciphertext
+                       encrypted by a
+                       <A HREF="#vigenere">full Vigen&#232;re cipher</A>
+                       (with polyalphabetic substitution).
+        </TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>
+
+The output for various commands are as follows.
+
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>keygen</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a key file in the format
+            suitable to be used by the
+            <A HREF="#vigenere">full Vigen&#232;re cipher</A>
+            (with polyalphabetic substitution).
+            The number of lines in the output must be exactly equal to
+            the specified <TT>period</TT>.  Each line is
+            exactly 26 characters long (lowercase English characters)
+            and is terminated with a <TT>'\n'</TT>
+            character.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>crypt</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is an ASCII text file.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>invkey</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a key file in the format
+            identical to that of the input key file.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>histo</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a histogram of ciphertext
+            character frequencies.  The output must be sorted according
+            to the frequencies of the ciphertext characters in descending order.
+            If there is a tie, you must output letters earlier in the alphabet
+            first.
+            You should first print out the total number of lowercase
+            English ciphertext character (L).  Then for the most frequently
+            occurred ciphertext character, print the number of occurrences
+            followed by the corresponding frequency in percentages.
+            For example,
+            if <TT>'y'</TT> occurs most frequencly with a count of 12 and
+            <TT>L</TT> is 76, you should output
+            (without leading space characters):
+    <PRE>
+    y: 12 (15.79%)</PRE>
+            The percentages must have exactly 2 digits after the decimal point.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>solve</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            For this command, the output has 3 sections.
+            The first section is related to the method of Kasiski.
+            The 2nd section is related to the average index of coincidence.
+            The 3rd section is related to the auto-correlation method.
+            The output of each section with a banner indicating the method
+            that is being used.
+            Please see the <A HREF="#testdata">test data</A>
+            section for the exact text.
+            <P>
+            For the Kasiski method, you should begin with a string
+            length of 4 and outputs all ciphertext matches.
+            (A string must only contain letters in the alphabet.)
+            You should
+            stop when no more matches can be found.  For a given
+            string length, each line in the output corresponds to a match
+            of two strings in the ciphertext. For example, if the first
+            string starts at character index 123,
+            the second string starts at character index 367,
+            the strlength is 4, and the string is <TT>"uoez"</TT>,
+            you should output (without leading space characters):
+    <PRE>
+    len=4, i=123, j=367, j-i=244, uoez</PRE>
+            If at length 7, you do not found any matches, you should print
+            (without leading space characters):
+    <PRE>
+    len=7, no more matches</PRE>
+            and move on to the average index of coincidence method.
+            Please note that the indices <TT>i</TT> and <TT>j</TT>
+            are zero-based indices, i.e., the index for the first character
+            in the file is zero.
+            <P>
+            For the average index of coincidence, you should compute
+            the frequencies of the ciphertext characters and the
+            index of coincidence (equation 7.2 on page 249 of the
+            textbook,
+            with <I>k<SUB>p</SUB></I>=0.0658).
+            Then you should tabulate the expected
+            index of coincidences for cycle lengths from 1 to <TT>max_t</TT>.
+            You should print out the total number of lowercase
+            English ciphertext character (L), the number of occurrences
+            of each of the lowercase English ciphertext characters,
+            the computed IC, and the expected ICs.
+            Below is an example with <TT>max_t</TT> equaling 10.
+    <PRE>
+    L=346
+    f('a')=7
+    f('b')=14
+    ...
+    f('z')=20
+    IC=0.041417442
+    t=1, E(IC)=0.0658
+    t=2, E(IC)=0.052091148
+    ...
+    t=10, E(IC)=0.041124067</PRE>
+            <P>
+            For the auto-correlation method
+            (please see example 7.77 on page 250 of the textbook),
+            for each possible period
+            <I>T</I>
+            (from 1 to <TT>max_t</TT>),
+            you should count the total number of occurrences where
+            the <I>i</I><SUP>&nbsp;th</SUP>
+            ciphertext character is identical to
+            the <I>(i+T)</I><SUP>&nbsp;th</SUP>
+            ciphertext character, for <I>i</I> from 1 to <I>L-T</I>,
+            where L is the length of the ciphertext and both
+            ciphertext characters must be lowercase English characters.
+            For example, if <I>T</I is 5 and the number of coincidence
+            is 21, you should output (without leading space characters):
+    <PRE>
+    t=5, count=21</PRE>
+        </TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+There is no specific algorithm given for the keygen command.
+One suggestion is to modify <A HREF="../../rc4.html">RC4</A>
+to use only 26 internal states and use the current date and time as the key.
+When the key scheduling step is finished, the
+content of the internal states can be used as
+a random permutation.
+
+<P>
+
+Pleaes output reasonable and useful error messages if the command
+is malformed or file does not exist or inaccessible.  If the key file
+is malformed, please output meaningful error messages.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A NAME="vigenere">
+                <B>Full Vigen&#232;re Cipher</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+In a full Vigen&#232;re cipher with period <I>T</I>,
+<I>T</I> permutation functions are used.  Each permutation
+function maps a single plaintext character to a ciphertext
+character.  The <I>i</I><SUP>&nbsp;th</SUP> permutation
+function maps the <I>i</I><SUP>&nbsp;th</SUP>,
+<I>(i+T)</I><SUP>&nbsp;th</SUP>, <I>(i+2T)</I><SUP>&nbsp;th</SUP>, ...
+plaintext characters to a ciphertext character.
+Since we are dealing with lowercase ASCII characters
+only, we can specify a permutation function with 26 lowercase
+ASCII characters.  For example,
+    <PRE>
+    kybrcwsoxzlednhjfupitmvqag</PRE>
+
+specifies that each characters in <TT>abcdefghijklmnopqrstuvwxyz</TT>
+maps to <TT>kybrcwsoxzlednhjfupitmvqag</TT>, respectively.
+
+<P>
+
+To specify all <I>T</I> permutation functions, we
+use a keyfile with <I>T</I> lines of text.  Each line is
+26 characters long and is terminated with a <TT>'\n'</TT> character.
+Furthermore, line <I>i</I> corresponds to the <I>i</I><SUP>&nbsp;th</SUP>
+permutation function.
+For example, a keyfile can look like the following (with <I>T</I>=5):
+    <PRE>
+    yvndjporftcualiwgxmzshqebk
+    gqamiporzdtvynjlkbucfxswhe
+    riacuysxzgwhvbnmjdklpqefot
+    ldhwfjitrmpncazquxoeksvgyb
+    gntyqmsjcoihpbadlwxvkezfru</PRE>
+
+The rule of encryption is that if the <I>j</I><SUP>&nbsp;th</SUP>
+input character is a lower case English character, it is encrypted
+with the <I>(j mod T)</I><SUP>&nbsp;th</SUP> permutation function.
+Otherwise, it is unencrypted.  If the plaintext is <TT>"ab@&nbsp;ab@"</TT>,
+the ciphertext should be <TT>"yq@&nbsp;gv@"</TT> if the above keyfile is used for
+encryption.
+
+<P>
+
+The above keyfile has the following inverse:
+    <PRE>
+    mykdxiqvoeznscgfwhujlbprat
+    crtjzuayeoqpdngfbhwkslxvmi
+    cndrwxjlbqstpoyuvagzemkhfi
+    nzmbtexcgfuajlskpivhqwdryo
+    onipvxalkhuqfbjmeygcztrsdw</PRE>
+
+Using the above inverse keyfile to encrypt
+<TT>"yq@&nbsp;gv@"</TT> will result in the original plaintext
+<TT>"ab@&nbsp;ab@"</TT>.
+
+<P>
+
+For the purpose of this assignment, you may assume that the
+original plaintext is a single line of ASCII text.  There is
+only a single <TT>'\n'</TT> at the end of the line.  You may stop
+reading the input as soon as you see a <TT>'\n'</TT> character.
+If you encounter a character less than <TT>0x20</TT> or greater than <TT>0x7e</TT>
+(except for <TT>'\n'</TT>), please abort your program and print an error message.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="testdata"><B>Test Data</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+Let the original plaintext file be <A HREF="anthem.pt"><TT>anthem.pt</TT></A>
+and let the keyfile be <A HREF="anthem.keys"><TT>anthem.keys</TT></A>
+(with a period of 5)
+and its inverse be <A HREF="anthem.invkeys"><TT>anthem.invkeys</TT></A>.
+Running the following command:
+    <PRE>
+    hw4 crypt -k=anthem.keys anthem.pt > anthem.ct</PRE>
+should produce <A HREF="anthem.ct"><TT>anthem.ct</TT></A>.
+Running the following command:
+    <PRE>
+    hw4 crypt -k=anthem.invkeys anthem.ct</PRE>
+should produce the original plaintext.
+
+<P>
+
+Running the following command:
+    <PRE>
+    hw4 histo -t=5 -i=1 anthem.ct > anthem.histo.5.1
+    hw4 histo -t=7 -i=7 anthem.ct > anthem.histo.7.7</PRE>
+should produce <A HREF="anthem.histo.t5.i1">anthem.histo.t5.i1</A>
+and <A HREF="anthem.histo.t7.i7">anthem.histo.t7.i7</A>.
+
+<P>
+
+Running the following command:
+    <PRE>
+    hw4 solve -l=10 anthem.ct > anthem.solve</PRE>
+should produce <A HREF="anthem.solve">anthem.solve</A>.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="report"><B>Cryptanalysis Report</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+You must include a <I>cryptanalysis report</I>
+section in your <TT>README</TT> file.
+The report should give some details in performing cryptanalysis
+of the following two mystery ciphertext files generated by a
+<A HREF="#vigenere">full Vigen&#232;re cipher</A> with different periods
+(less than 50).
+<UL>
+<LI><A HREF="mystery1.ct">mystery1.ct</A>
+<LI><A HREF="mystery2.ct">mystery2.ct</A>
+</UL>
+
+You must include the result of running <TT>"hw4 solve ..."</TT>
+for each of the ciphertext files in your report
+(<SPAN CLASS="update">[BC: updated 2/26/2012]</SPAN> you can keep them in
+separate files and just reference these files in your report).
+For each of the ciphertext file, you must state in your report
+what you think the period is in order to receive credit for your
+answer.  You must not give more than one answer.
+
+<P>
+
+If you have successfully recovered the plaintext,
+please provide the corresponding keyfile for decryption
+(please name them <TT><B>mystery1.invkeys</B></TT>
+and <TT><B>mystery2.invkeys</B></TT>).
+In your analysis, you must give details regarding how you
+obtained the periods for the ciphers.
+Please only <I>briefly</I> describe how you recovered the plaintext
+(after you have determined the period).
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="grading"><B>Grading Guidelines</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+<!--
+The grading guidelines is not available yet.
+  -->
+
+The <A HREF="hw4-grading.txt">grading guidelines</A> has been made available.
+Please run the scripts in the guidelines on <TT>nunki.usc.edu</TT>.
+
+<P>     
+        
+The grading guidelines is the <B>only</B> grading procedure we will use to
+grade your program.  No other grading procedure will be used.
+To the best of our effort, we will only change the testing data for
+grading but not the commands.  (We may make minor changes if we discover
+bugs in the script or things that we forgot to test.)  It is strongly
+recommended that you run your code through the scripts in the grading guidelines.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="misc"><B>Miscellaneous Requirements and Hints</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+<UL>
+<LI>There is no memory buffer size limit for this assignment.
+<P>
+<LI>It's important that <B>every byte</B> of your data is read and written
+    correctly.  You will <B>lose a lot of points</B> if one byte of data is
+    generated incorrectly!  The grading of this assignment will be <B>harsh</B>.
+    (There is an exception for this assignment.  When outputing the value of
+    <TT>IC</TT> or <TT>E(IC)</TT>, your numbers should be close but does not
+    have to identical to the solution.)
+<P>
+<LI>Please follow the UNIX convention that, when your output is an ASCII
+    file, append '\n' in the last line of the output if it's not a
+    blank line.  (This way, you don't get the commandline prompt appearing at
+    the wrong place on the screen.)
+<P>
+<LI>String I/O functions such as <TT>fgets()</TT>, <TT>scanf()</TT>, and
+    <TT>printf()</TT> are really meant for inputing/outputing
+    null-terminated <I>strings</I>.
+    Do <B>not</B> use them to input/output binary data!
+<P>
+<LI>The Solaris workstations in the ISD lab in SAL have the same
+    setup as nunki.usc.edu.  So, if you are logged on to one of
+    these workstations, please do your development locally and
+    not to overload nunki unnecessarily.
+<P>
+<LI>Start working on this <B>early</B>!  Please don't complain
+    to the instructor that this assignment is too tedious or
+    it takes too much work just to parse the commandline.
+    Get it done early and get it done right!
+<P>
+<LI>If you are interested in learning more about OpenSSL, there is
+    a lot of information on the
+    <A HREF="http://www.openssl.org/docs/">OpenSSL documentation site</A>.
+    Please do not ask the TA or the instructor what these functions
+    do and where to put them.
+    Read the documentation and man pages.  Search the web.
+    Try things out!  (If you are really stuck after you have
+    tried quite a few different things, then you may seek help from the
+    TA or the instructor.)
+    <P>
+    If you have trouble finding the documentation on some <TT>openssl</TT>
+    functions, you can look for their man pages on <TT>nunki.usc.edu</TT>
+    after you have <A HREF="../../openssl.html#manpath">setup the
+    <TT>MANPATH</TT>
+    environment variable to include <TT>openssl</TT> man pages</A>.
+    For example, you can do:
+    <PRE>
+    man MD5
+    man SHA1</PRE>
+</UL>
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        </TABLE>
+    </TD>
+</TR>
+</TABLE>
+
+<HR>
+[<I>Last updated Sun Feb 26 2012</I>] &nbsp;&nbsp;
+[<I>Please see <A
+HREF="../../copyright.html">copyright</A> regarding copying.</I>]
+
+<!-- @(#)$Id: index.html,v 1.2 2012/02/26 18:42:31 william Exp $ -->
+
+</BODY>
+</HTML>

@@ -1,0 +1,51 @@
+Kevin Crane
+ID#: 3218-2771-59
+CSCI-531 
+Homework 1 - Manipulating Bits
+
+1. Use
+	- Compile with:
+		make
+	- Display hex dump of input:
+		./hw1 hexdump [file]
+	- Encode input to Base64
+		./hw1 enc-base64 [file]
+	- Decode input from Base64
+		./hw1 dec-base64 [file]
+	- Clean binary files with:
+		make clean
+
+2. Design
+	- Hexdump
+		- Print out the current byte count as a 6-digit hex value
+		- Read each byte one by one and print it out as a hex value, putting 
+			spaces where needed
+		- After 16 bytes, print out the 16 hex values stored as characters
+		- Repeat until end of file
+	- Base64 Encoding
+		- Read 3 ASCII bytes at a time
+		- Do bit-wise operations to drop from 8 bits/char -> 6 bits/char
+		- Do lookup to see what Base64 matches the 6 bit value that just got 
+			made
+		- Concat each new Base64 char to output
+		* If not enough bytes read, concat '=' to end
+	- Base64 Decoding
+		- Read 4 chars from input
+		- If between A-Z, subtract 'A'; if between a-z, subtract ('a'-26); 
+			if '+' -> 62; if '/' -> 63
+		- Now have 4 bytes of values 0-63. Do bit operations to convert 
+			to 3 8-bit values
+		- Print them out
+		* If you get '\n' in buffer, skip it
+		* If you get '=' in buffer, end.
+		* If value not in ranges listed above, print to stderr that the input 
+			file does not contain valid Base64 characters, end program
+
+3. Known Bugs
+	- None known
+
+4. Deviation from the specs
+	- None known
+	
+5. References
+	- None needed

@@ -1,0 +1,67 @@
+Kasiski Method
+==============
+len=4, i=41, j=131, j-i=90, zstv
+len=4, i=41, j=161, j-i=120, zstv
+len=4, i=97, j=217, j-i=120, ulpf
+len=4, i=98, j=218, j-i=120, lpfn
+len=4, i=99, j=219, j-i=120, pfns
+len=4, i=131, j=161, j-i=30, zstv
+len=5, i=97, j=217, j-i=120, ulpfn
+len=5, i=98, j=218, j-i=120, lpfns
+len=6, i=97, j=217, j-i=120, ulpfns
+len=7, no more matches
+
+Average Index of Coincidence
+============================
+L=346
+f('a')=7
+f('b')=14
+f('c')=11
+f('d')=12
+f('e')=12
+f('f')=9
+f('g')=11
+f('h')=12
+f('i')=10
+f('j')=21
+f('k')=6
+f('l')=23
+f('m')=6
+f('n')=17
+f('o')=16
+f('p')=7
+f('q')=14
+f('r')=17
+f('s')=13
+f('t')=7
+f('u')=23
+f('v')=18
+f('w')=7
+f('x')=18
+f('y')=15
+f('z')=20
+IC=0.041417442
+t=1, E(IC)=0.0658
+t=2, E(IC)=0.052091148
+t=3, E(IC)=0.047521531
+t=4, E(IC)=0.045236722
+t=5, E(IC)=0.043865837
+t=6, E(IC)=0.042951914
+t=7, E(IC)=0.042299111
+t=8, E(IC)=0.041809509
+t=9, E(IC)=0.041428708
+t=10, E(IC)=0.041124067
+
+Auto-correlation Method
+=======================
+t=1, count=8
+t=2, count=6
+t=3, count=6
+t=4, count=13
+t=5, count=21
+t=6, count=7
+t=7, count=10
+t=8, count=7
+t=9, count=8
+t=10, count=12
+

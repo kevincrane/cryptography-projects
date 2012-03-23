@@ -1,0 +1,41 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw2
+
+# Boilerplate constants
+set p0="yesnomaybe"
+set p1="cs531-f09"
+set p2="vcrypto"
+set p3="password"
+set p4="emptyString"
+set p5="applied"
+set p6="cryptography"
+set p7="publickey"
+
+set len0=320
+set len1=241
+set len2=202
+set len3=803
+set len4=724
+
+#
+# decrypt: +24 points (3 points for each correct answer)
+#
+/bin/rm bar*.pbm
+
+foreach f (small money bowtie cross)
+	cat $srcdir/bar-$f-merged.pbm | ./hw2 decrypt > bar.pbm
+	echo "==> $srcdir/$f.pbm"
+	diff $srcdir/bar-$f.pbm bar.pbm
+	/bin/rm bar.pbm
+end
+
+foreach f (hello nouturn stop viterbi)
+	./hw2 decrypt $srcdir/bar-$f-merged.pbm > bar.pbm
+	echo "==> $srcdir/$f.pbm"
+	diff $srcdir/bar-$f.pbm bar.pbm
+	/bin/rm bar.pbm
+end

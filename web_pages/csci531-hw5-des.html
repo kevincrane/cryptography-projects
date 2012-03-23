@@ -1,0 +1,579 @@
+<HTML>
+<HEAD>
+<TITLE>Homework #5 - CSCI 531, Spring 2012</TITLE>
+<LINK REV="made" HREF="mailto:bill.cheng@acm.org"></HEAD>
+<BODY BGCOLOR="#FFFFFF" LINK="#D02090" VLINK="#996600" ALINK="#990000">
+
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=100%>
+<TR><TD ALIGN=CENTER VALIGN=TOP WIDTH=112>
+    <!-- COL 1, should be identical to all other pages here -->
+    <TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0 WIDTH=113>
+    <TR><TD ALIGN=CENTER VALIGN=TOP WIDTH=112>
+        &nbsp;
+        </TD>
+    </TR>
+    <TR><TD ALIGN=CENTER VALIGN=TOP WIDTH=112>
+        <A HREF="http://www.cs.usc.edu/"><IMG SRC="../../images/usctommy.gif"
+            ALT="USC CSD Home" BORDER=0></A>
+        <!-- BR>&nbsp;<BR -->
+        <!-- IMG SRC="images/small-uc.gif" BORDER=0 -->
+        </TD>
+    </TR>
+    </TABLE>
+    </TD>
+    <!-- TD ALIGN=LEFT VALIGN=TOP WIDTH=13 -->
+    <!-- COL 2, should be identical to all other pages here -->
+        <!-- IMG SRC="images/spacer.gif" HEIGHT=1 WIDTH=13 -->
+    <!-- /TD -->
+    <TD ALIGN=LEFT VALIGN=TOP>
+    <!-- COL 3, every page should be different -->
+        <TABLE BORDER=0>
+        <!-- Page Header -->
+        <TR><TD ALIGN=LEFT VALIGH=TOP>
+                <A HREF="../../">Spring 2012<A>
+            </TD>
+            <TD ALIGN=RIGHT VALIGH=TOP>
+                <A HREF="../../">CSCI 531</A><BR>
+            </TD>
+        </TR>
+        <BR>
+        <!-- Page Title -->
+        <TR><TD COLSPAN=3 ALIGN=CENTER>
+                <H2>Homework #5</H2>
+                <H4>(100 points total)</H4>
+                <H2>DES</H2>
+                <B><I>Due 11:45PM
+                3/23/2012 (firm)</I></B>
+                <!--
+                <H3><FONT COLOR="red"><I>(Under Construction -
+                    Anything Can Change without Notice)</I></FONT></H3>
+                  -->
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="intro"><B>Assignment</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+The purpose of this assignment is to get you familiar with
+DES by implementing DES from scratch with the flexibility
+of changing some of the internal tables.  For this assignment,
+you are <B>not</B> allowed to use publicly available DES-specific
+code (generic public code for parsing input data is allowed).
+
+<P>
+
+Please see the
+<A HREF="../../lectures.html#tentative">lecture slides on DES</A> or section
+7.4 on pages 250-256 of the
+<A HREF="http://www.cacr.math.uwaterloo.ca/hac/">
+textbook (Handbook of Applied Cryptography)</A> (in Chapter 7).
+
+<P>
+
+<A HREF="../../submit.html">Electronic submissions</A> only.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="compile"><B>Compiling</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+Please use a <TT>Makefile</TT> so that when the grader simply enters:
+    <PRE>
+    make hw5</PRE>
+an executable named <B>hw5</B> is created.
+(Minor variation on the <TT>make</TT> command is allowed.)
+Please make sure that your submission conforms to
+<A HREF="../../makefile.html#requirements">other
+general compilation requirements</A>.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="syntax"><B>Commandline Syntax & Program
+                Output</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+The commandline syntax for <B>hw5</B> is as follows:
+
+<PRE>
+    <B>hw5</B> <B>tablecheck</B> <B>-t=</B>tablefile
+    <B>hw5</B> <B>encrypt</B> <B>-k=</B>key <B>-t=</B>tablefile [file]
+    <B>hw5</B> <B>decrypt</B> <B>-k=</B>key <B>-t=</B>tablefile [file]
+    <B>hw5</B> <B>encrypt3</B> <B>-k=</B>key3 <B>-t=</B>tablefile [file]
+    <B>hw5</B> <B>decrypt3</B> <B>-k=</B>key3 <B>-t=</B>tablefile [file]</PRE>
+
+<P>
+
+Square bracketed items are optional.
+You must follow the UNIX convention that <B>commandline options</B>
+can come in any order.  (Note: a <B>commandline option</B> is a
+commandline argument that begins with a <B>-</B> character in a
+commandline syntax specification.)
+If an input file is not specified, your program should
+read from <TT>stdin</TT>.
+Output of your program must go to <TT>stdout</TT> and
+error messages must go to <TT>stderr</TT>.
+
+<P>
+
+The meaning of the commands are:
+
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>tablecheck</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Check the integrity of <TT>tablefile</TT>.
+                       Please see <A HREF="#format">tablefile format</A>
+                       to see the requirements.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>encrypt</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Encrypts the input using DES driven by
+                       <TT>tablefile</TT> in the ECB mode using <TT>key</TT>
+                       as the encryption key
+                       (8-byte long and in hexstring format).
+                       If the filesize of the input is not a multiple of
+                       8 bytes, please pad it with zeroes.
+                       (Please treat <TT>file</TT> as a binary file.)
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>decrypt</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Decrypts the input using DES driven by
+                       <TT>tablefile</TT> in the ECB mode using <TT>key</TT>
+                       as the encryption key
+                       (8-byte long and in hexstring format).
+                       If the filesize of the input is not a multiple of
+                       8 bytes, please pad it with zeroes.
+                       (Please treat <TT>file</TT> as a binary file.)
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>encrypt3</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Encrypts the input using EDE triple DES driven by
+                       <TT>tablefile</TT> in the ECB mode using <TT>key3</TT>
+                       as the encryption key
+                       (24-byte long and in hexstring format).
+                       If the filesize of the input is not a multiple of
+                       8 bytes, please pad it with zeroes.
+                       (Please treat <TT>file</TT> as a binary file.)
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>decrypt3</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>Decrypts the input using EDE triple DES driven by
+                       <TT>tablefile</TT> in the ECB mode using <TT>key3</TT>
+                       as the encryption key
+                       (24-byte long and in hexstring format).
+                       If the filesize of the input is not a multiple of
+                       8 bytes, please pad it with zeroes.
+                       (Please treat <TT>file</TT> as a binary file.)
+        </TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>
+
+The output for various commands are as follows.
+
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>tablecheck</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The command should produce no output in <TT>stdout</TT>.
+            All error output must go to <TT>stderr</TT>.
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>encrypt</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a binary file where each
+            8-byte block is a direct DES encryption of the corresponding
+            input 8-byte block.
+            <P>
+            You must also output, to <TT>stderr</TT>, the values of the subkeys,
+            the L<SUB>i</SUB> and R<SUB>i</SUB> values as follows:
+    <PRE>
+    (C0,D0)=...
+    (C1,D1)=...
+    k1=...
+    (C2,D2)=...
+    k2=...
+    ...
+    (C16,D16)=...
+    k16=...
+    (L0,R0)=...
+    (L1,R1)=...
+    ...
+    (L16,R16)=...</PRE>
+            The values of the C's, D's, L's, R's, and subkeys
+            should be printed in hexstring format.  Please <B>only</B> output
+            the L's and R's values during encryption of the
+            <B>first 8-byte block</B>.
+            <P>
+            Using the palindromic (and anti-palidromic) definition,
+            if <TT>key</TT> is a weak or a semi-weak key,
+            please print an error message and only the subkeys.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>decrypt</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a binary file where each
+            8-byte block is a direct DES decryption of the corresponding
+            input 8-byte block.  If the original (binary) plaintext
+            filesize is not a multiple of 8 bytes, the output of the
+            decrypt command will not be the same as the plaintext file.
+            <P>
+            You must also output, to <TT>stderr</TT>, the values of the subkeys,
+            the L<SUB>i</SUB> and R<SUB>i</SUB> values as follows:
+    <PRE>
+    (C0,D0)=...
+    (C1,D1)=...
+    k1=...
+    (C2,D2)=...
+    k2=...
+    ...
+    (C16,D16)=...
+    k16=...
+    (L0,R0)=...
+    (L1,R1)=...
+    ...
+    (L16,R16)=...</PRE>
+            The values of the C's, D's, L's, R's, and subkeys
+            should be printed in hexstring format.  Please <B>only</B> output
+            the L's and R's values during decryption of the
+            <B>first 8-byte block</B>.
+            <P>
+            Using the palindromic (and anti-palidromic) definition,
+            if <TT>key</TT> is a weak or a semi-weak key,
+            please print an error message and only the subkeys.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>encrypt3</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a binary file where each
+            8-byte block is a direct 3DES encryption of the corresponding
+            input 8-byte block.
+            If one of the keys in <TT>key3</TT> is a weak or a semi-weak key,
+            please just print an error message.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>decrypt3</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>
+            The output of this command is a binary file where each
+            8-byte block is a direct 3DES decryption of the corresponding
+            input 8-byte block.  If the original (binary) plaintext
+            filesize is not a multiple of 8 bytes, the output of the
+            decrypt command will not be the same as the plaintext file.
+            If one of the keys in <TT>key3</TT> is a weak or a semi-weak key,
+            please just print an error message.
+        </TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+
+<P>
+
+Please note that before encrypting or decrypting, your program
+must make sure that the encryption key is valid and
+call the <TT>tablecheck</TT> functionality internally to
+make sure that you have a valid <TT>tablefile</TT> before proceeding.
+
+<P>
+
+Pleaes output reasonable and useful error messages if the command
+is malformed or file does not exist or inaccessible.  If the key file
+is malformed, please output meaningful error messages.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A NAME="format">
+                <B><TT>tablefile</TT> Format</B></A></FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+A <TT>tablefile</TT> is an ASCII file containing exactly 14 lines.
+Each line has the format of <TT>key=value</TT> where <TT>key</TT>
+can be one of the following (must be in uppercase):
+<B><TT>IP</TT></B>,
+<B><TT>E</TT></B>,
+<B><TT>P</TT></B>,
+<B><TT>S#</TT></B>,
+<B><TT>V</TT></B>,
+<B><TT>PC1</TT></B>, and
+<B><TT>PC2</TT></B>, where <B><TT>#</TT></B> is a number between
+1 and 8, inclusive.  To the right of the equal sign, <TT>value</TT> contains
+a list of integer values that are separated by commas.
+There should contain no white spaces (such as space or tab characters).
+Each line corresponds to a DES internal table with the same name.
+Please see the
+<A HREF="../../lectures.html#tentative">lecture slides on DES</A> or section
+7.4 on pages 250-256 of the
+<A HREF="http://www.cacr.math.uwaterloo.ca/hac/">
+textbook (Handbook of Applied Cryptography)</A> (in Chapter 7)
+for details.
+The following are requirements for each of the tables (and corresponding
+input lines).
+
+<BLOCKQUOTE>
+<TABLE BORDER=0 CELLPADDING=0 CELLSPACING=0>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>IP</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains a random permutation
+                       of the values from 1 through 64, inclusive.
+                       (You need to compute the inverse transform in your code.)
+        </TD>
+    </TR>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>E</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains 48 values.  The allowed values are
+                       between 1 through 32, inclusive.  All 32 numbers must
+                       appear in this table at least once and at most twice.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>P</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains a random permutation
+                       of the values from 1 through 32, inclusive.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>S#</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains 64 values, in a group of 16.
+                       Each group is a random permutation
+                       of the values from 0 through 15, inclusive.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>V</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains 16 values.
+                       Each value can be either 1 or 2.
+                       There should be 4 ones and 12 twos.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>PC1</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains 56 values.
+                       These values are a random permutation
+                       of the numbers from 1 through 64, inclusive,
+                       with the values which are multiples of 8 removed.
+        </TD>
+    <TR><TD>&nbsp;</TD></TR>
+    <TR><TD ALIGN=LEFT VALIGN=TOP><B>PC2</B></TD>
+        <TD VALIGN=TOP>&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+        <TD VALIGN=TOP>This table contains 48 values.
+                       These values are a random permutation
+                       of the numbers from 1 through 56, inclusive,
+                       with 8 randomly chosen numbers removed.
+        </TD>
+    </TR>
+</TABLE>
+</BLOCKQUOTE>
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="testdata"><B>Test Data &amp; Sample Output</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+The <TT>tablefile</TT> for the standard DES is provided as
+<A HREF="des.in"><TT>des.in</TT></A>.  The standard DES
+test vectors is also provided as <A HREF="testvec.in">testvec.in</A>.
+The first 8 bytes of <TT>testvec.in</TT> is used below and provided as
+<A HREF="short.in">short.in</A>"</TT>.
+
+<P>
+
+For the <TT>"encrypt -k=0123456789abcdef -t=des.in
+<A HREF="short.in">short.in</A>"</TT> command,
+during key scheduling, your program should output the following
+to <TT>stderr</TT>:
+    <PRE>
+    (C0,D0)=f0ccaa0aaccf00
+    (C1,D1)=e1995415599e01
+    k1=0b02679b49a5
+    (C2,D2)=c332a83ab33c02
+    k2=69a659256a26
+    (C3,D3)=0ccaa0faccf00a
+    k3=45d48ab428d2
+    (C4,D4)=332a83cb33c02a
+    k4=7289d2a58257
+    (C5,D5)=ccaa0f0ccf00aa
+    k5=3ce80317a6c2
+    (C6,D6)=32a83c333c02ab
+    k6=23251e3c8545
+    (C7,D7)=caa0f0ccf00aac
+    k7=6c04950ae4c6
+    (C8,D8)=2a83c333c02ab3
+    k8=5788386ce581
+    (C9,D9)=55078667805566
+    k9=c0c9e926b839
+    (C10,D10)=541e199e015599
+    k10=91e307631d72
+    (C11,D11)=50786658055667
+    k11=211f830d893a
+    (C12,D12)=41e1995015599e
+    k12=7130e5455c54
+    (C13,D13)=07866550556678
+    k13=91c4d04980fc
+    (C14,D14)=1e1995415599e0
+    k14=5443b681dc8d
+    (C15,D15)=78665505566780
+    k15=b691050a16b5
+    (C16,D16)=f0ccaa0aaccf00
+    k16=ca3d03b87032</PRE>
+
+During encryption of your program should output the following
+to <TT>stderr</TT>:
+    <PRE>
+    (L0,R0)=b7a4873600fe1327
+    (L1,R1)=00fe1327c9efe379
+    (L2,R2)=c9efe379c225d717
+    (L3,R3)=c225d7171efc7384
+    (L4,R4)=1efc738476f2b3de
+    (L5,R5)=76f2b3de10d55380
+    (L6,R6)=10d55380e90739fd
+    (L7,R7)=e90739fd572337f0
+    (L8,R8)=572337f0cd9968e4
+    (L9,R9)=cd9968e4256a96b9
+    (L10,R10)=256a96b98049c24c
+    (L11,R11)=8049c24ca1663aa6
+    (L12,R12)=a1663aa6b714e099
+    (L13,R13)=b714e099a3eb2c46
+    (L14,R14)=a3eb2c46b94da965
+    (L15,R15)=b94da9651a037d0d
+    (L16,R16)=1a037d0d6091a7a1</PRE>
+
+The output of your program, in hexstring representation, should be:
+    <PRE>
+    3fa40e8a984d4815</PRE>
+
+This result matches the textbook.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="grading"><B>Grading Guidelines</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+<!--
+The grading guidelines is not available yet.
+  -->
+
+The <A HREF="hw5-grading.txt">grading guidelines</A> has been made available.
+Please run the scripts in the guidelines on <TT>nunki.usc.edu</TT>.
+
+<P>     
+        
+The grading guidelines is the <B>only</B> grading procedure we will use to
+grade your program.  No other grading procedure will be used.
+To the best of our effort, we will only change the testing data for
+grading but not the commands.  (We may make minor changes if we discover
+bugs in the script or things that we forgot to test.)  It is strongly
+recommended that you run your code through the scripts in the grading guidelines.
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        <!-- Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT BGCOLOR="#000000" WIDTH=1200>
+                <FONT COLOR="#ffffff"><A
+                NAME="misc"><B>Miscellaneous Requirements and Hints</B></A>
+                    </FONT>
+            </TD>
+        </TR>
+        <!-- Top Section -->
+        <TR><TD COLSPAN=3 ALIGN=LEFT>
+<UL>
+<LI>Just want to emphasize that for this assignment,
+    you are <B>not</B> allowed to use publicly available DES-specific
+    code.  Generic public code for other purpose, such as parsing input data,
+    is allowed.
+<P>
+<LI>Although there is no memory buffer size limit for this assignment, when
+    reading an input file for encryption/decryption, please use a reasonable
+    size file buffer.
+<P>
+<LI>It's important that <B>every byte</B> of your data is read and written
+    correctly.  You will <B>lose a lot of points</B> if one byte of data is
+    generated incorrectly!  The grading of this assignment will be <B>harsh</B>.
+<P>
+<LI>Please follow the UNIX convention that, when your output is an ASCII
+    file, append '\n' in the last line of the output if it's not a
+    blank line.  (This way, you don't get the commandline prompt appearing at
+    the wrong place on the screen.)
+<P>
+<LI>String I/O functions such as <TT>fgets()</TT>, <TT>scanf()</TT>, and
+    <TT>printf()</TT> are really meant for inputing/outputing
+    null-terminated <I>strings</I>.
+    Do <B>not</B> use them to input/output binary data!
+<P>
+<LI>The Solaris workstations in the ISD lab in SAL have the same
+    setup as nunki.usc.edu.  So, if you are logged on to one of
+    these workstations, please do your development locally and
+    not to overload nunki unnecessarily.
+<P>
+<LI>Start working on this <B>early</B>!  Please don't complain
+    to the instructor that this assignment is too tedious or
+    it takes too much work just to parse the commandline.
+    Get it done early and get it done right!
+<P>
+<LI>Hints on parsing a <TT>tablefile</TT>
+    <A HREF="parsing.html">has been made available</A>.
+</UL>
+            </TD>
+        </TR>
+        <TR><TD>&nbsp;</TD></TR>
+        </TABLE>
+    </TD>
+</TR>
+</TABLE>
+
+<HR>
+[<I>Last updated Wed Jan 04 2012</I>] &nbsp;&nbsp;
+[<I>Please see <A
+HREF="../../copyright.html">copyright</A> regarding copying.</I>]
+
+<!-- @(#)$Id: index.html,v 1.1 2012/01/05 06:00:55 william Exp $ -->
+
+</BODY>
+</HTML>

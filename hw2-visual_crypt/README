@@ -1,0 +1,70 @@
+Kevin Crane
+ID#: 3218-2771-59
+CSCI-531 
+Homework 2 - Visual Cryptography
+
+1. Use
+	- Compile with:
+		make hw2
+	- A simple stream cipher
+		./hw2 stream -p=pphrase -l=len
+	- Encrypts an input PBM file with the simple stream cipher
+		./hw2 encrypt -p=pphrase -out=name [pbmfile]
+	- Create an output PBM file by merging the bits of two PBM files
+		./hw2 merge pbmfile1 pbmfile2
+	- Perform the reverse of the encryption algorithm
+		./hw2 decrypt [pbmfile]
+	- Clean binary files with:
+		make clean
+
+2. Design
+	- Stream
+		- Allocate enough memory to hold the whole stream cipher
+		- Take the MD5 hash of the original passphrase
+		- Concat this hash string with an integer {0-99}, and the passphrase again
+		- Take the MD5 of this new string; first 8 bytes are the beginning of the stream cipher
+		- Output these 8 bytes to either stdout or a char* out_buf
+		- Repeat for as long as needed to fill length of cipher
+	- Encrypt
+		- Read in the headers of the file, make sure "P4", width, and height are present
+		- Read in the entirety ot the PBM file into a large allocated buffer, in_buf
+		- Compute and store a sufficient portion of the stream cipher in a buffer, key_buf
+		- Open two new files and print the correct headers, with double the dimensions
+			- Round up to nearest byte
+		- Define two 2-byte shorts to store the values for each new file that's splitting
+		- Define a 1-byte char mask that starts with value 0x80
+		- Iterate through the original PBM file, across each row by byte, then downwards
+			- Read in a single byte (containing 8 bits) for bitwise operations
+			- Repeating 8 times, identify whether the current bit is a 0 or 1 by AND'ing with the byte mask
+			- Repeat the same thing with the key to determine whether the current key bit is a 0 or 1
+			- Based off the two results above, set the appropriate bits to white (0) or black (1) in 2-byte short
+			- Once a whole row has been, print all the values received to the two open split files
+		- Repeat until the whole file has been read and encrypted
+	- Merge
+		- Read in 2 files and verify their headers
+		- Read each value in, byte by byte
+		- Bitwise OR each value and print it to the screen
+		* TO TEST THIS, DIRECT OUTPUT TO FILE
+			e.g. ./hw2 merge money.1.pbm money.2.pbm > money-merged.pbm
+	- Decrypt
+		- Read in the file and verify its header
+		- Print PBM file header
+		- Repeat through all the lines:
+			- Read two full lines of bytes
+			- Take one byte from both lines
+			- Use mask 0xC0 shifted appropriately to determine
+				if there are two black bits on each line
+			- If so, flip a bit in out_val to 1 in correct spot
+			- Repeat until line complete, then print char out_val
+
+3. Known Bugs
+	- None known
+
+4. Deviation from the specs
+	- None known
+	
+5. References
+	- Simple code for detecting whether the current system is big-endian or
+		small-endian
+		- bool is_big_endian();
+		- From: http://stackoverflow.com/a/1001330

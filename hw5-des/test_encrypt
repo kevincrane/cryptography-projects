@@ -1,0 +1,42 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw5
+
+# Boilerplate constants
+set key=0123456789abcdef
+
+#
+# 2. encrypt (+10 points, +1 for each correct answer)
+#
+/bin/rm -f fout.? ferr.?
+
+#
+# use various tablefile to encrypt f22
+#
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	(./hw5 encrypt -k=$key -t=$srcdir/f$f $srcdir/f22 > fout.$f) >& ferr.$f
+	echo "==> $srcdir/f22.$f.enc"
+	diff fout.$f $srcdir/f22.$f.enc
+	echo "==> $srcdir/f22.$f.err"
+	diff ferr.$f $srcdir/f22.$f.err
+end
+
+#
+# 3. encrypt from stdin (+10 points, +1 for each correct answer)
+#
+/bin/rm -f fout.? ferr.?
+#
+# use various tablefile to encrypt f23 from stdin
+#
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	cat $srcdir/f23 | (./hw5 encrypt -k=$key -t=$srcdir/f$f > fout.$f) >& ferr.$f
+	echo "==> $srcdir/f23.$f.enc"
+	diff fout.$f $srcdir/f23.$f.enc
+	echo "==> $srcdir/f23.$f.err"
+	diff ferr.$f $srcdir/f23.$f.err
+end
+
+/bin/rm -f fout.? ferr.?

@@ -1,0 +1,77 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw5
+
+# Boilerplate constants
+set key=0123456789abcdef
+
+#
+# 1. standard DES testvector (+8 points, +1 for each correct case)
+#
+# the first 8 bytes of the standard DES testvector is in f20
+#
+(./hw5 encrypt -k=$key -t=$srcdir/des.in $srcdir/f20 > fout) >& ferr
+echo "==> $srcdir/f20.ct"
+diff fout $srcdir/f20.ct
+echo "==> $srcdir/f20.1.err"
+diff ferr $srcdir/f20.1.err
+/bin/rm -f fout ferr
+(./hw5 decrypt -k=$key -t=$srcdir/des.in $srcdir/f20.ct > fout) >& ferr
+echo "==> $srcdir/f20"
+diff fout $srcdir/f20
+echo "==> $srcdir/f20.2.err"
+diff ferr $srcdir/f20.2.err
+/bin/rm -f fout ferr
+
+#
+# the standard DES testvector is in f21
+#
+(./hw5 encrypt -k=$key -t=$srcdir/des.in $srcdir/f21 > fout) >& ferr
+echo "==> $srcdir/f21.ct"
+diff fout $srcdir/f21.ct
+echo "==> $srcdir/f21.1.err"
+diff ferr $srcdir/f21.1.err
+/bin/rm -f fout ferr
+(./hw5 decrypt -k=$key -t=$srcdir/des.in $srcdir/f21.ct > fout) >& ferr
+echo "==> $srcdir/f21"
+diff fout $srcdir/f21
+echo "==> $srcdir/f21.2.err"
+diff ferr $srcdir/f21.2.err
+/bin/rm -f fout ferr
+
+
+#
+# BIG TEST (ptext -> encrypt -> decrypt -> ptext)
+#(C) encrypt, then decrypt using student's code (+10 points, +1 for each correct answer)
+#
+/bin/rm -f fout fout.?
+#
+# use various tablefile to encrypt f22 then decrypt
+# the resulting output should be the same as f24
+# ignore all data that goes to stderr
+#
+foreach f (0 1 2 3 4)
+	/bin/rm -f fout
+	(./hw5 encrypt -k=$key -t=$srcdir/f$f $srcdir/f22 > fout) >& /dev/null
+	(./hw5 decrypt -k=$key -t=$srcdir/f$f fout > fout.$f) >& /dev/null
+	echo "==> fout.$f"
+	diff fout.$f $srcdir/f24
+end
+/bin/rm -f fout fout.?
+
+#
+# use various tablefile to encrypt f23 then decrypt
+# the resulting output should be the same as f25
+# ignore all data that goes to stderr
+#
+foreach f (5 6 7 8 9)
+	/bin/rm -f fout
+	(./hw5 encrypt -k=$key -t=$srcdir/f$f $srcdir/f23 > fout) >& /dev/null
+	(./hw5 decrypt -k=$key -t=$srcdir/f$f fout > fout.$f) >& /dev/null
+	echo "==> fout.$f"
+	diff fout.$f $srcdir/f25
+end
+/bin/rm -f fout fout.?
