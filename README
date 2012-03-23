@@ -1,0 +1,28 @@
+Author: Kevin Crane
+USC - Spring 2012
+CSCI-531 (Applied Cryptography)
+
+Cryptography Assignments
+Homework 1 - Manipulating Bits
+Homework 2 - Visual Cryptography
+Homework 4 - Cryptanalysis
+Homework 5 - DES
+Homework 6 - AES
+Homework 7 - Primes
+
+In general, programs are run by downloading the source code from a particular folder, built with 'make', and run with the main file.
+e.g.
+make
+./hw5
+
+This will print out further usage information about how to run the program.
+e.g. for homework 5 (DES)
+./hw5
+ERROR: invalid parameters. Should be one of the following:
+	hw5 tablecheck -t=tablefile
+	hw5 encrypt -k=key -t=tablefile [file]
+	hw5 decrypt -k=key -t=tablefile [file]
+	hw5 encrypt3 -k=key3 -t=tablefile [file]
+	hw5 decrypt3 -k=key3 -t=tablefile [file]
+
+If you have any questions about to run things or how things work, feel free to contact me at whatever info I left on GitHub.
