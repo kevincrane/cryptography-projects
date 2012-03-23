@@ -47,6 +47,19 @@ void circ_shift_left(unsigned char* val, int shift, int start, int numbits) {
 
 // ###########################################
 
+// Returns true if ch is a hex character (0-9, a-f)
+bool is_hex_char(char ch) {
+	if(ch >= '0' && ch <= '9') {
+		return true;
+	} else if(ch >= 'a' && ch <= 'f') {
+		return true;
+	} else if(ch >= 'A' && ch <= 'F') {
+		return true;
+	} else {
+		return false;
+	}
+}
+
 
 // Generate an array of 16 48-bit keys from initial 64-bit key
 bool gen_keys(char *init_key, FILE *table, unsigned char keys[16][6]) {
@@ -63,6 +76,13 @@ bool gen_keys(char *init_key, FILE *table, unsigned char keys[16][6]) {
 	if(strlen(init_key) != 16) {
 		fprintf(stderr, "ERROR: invalid key length. Must be 16 hex characters.\n");
 		return false;
+	} else {
+		for(int i=0; i<16; i++) {
+			if(!is_hex_char(init_key[i])) {
+				fprintf(stderr, "ERROR: invalid key. Must all be hex characters.\n");
+				return false;
+			}
+		}
 	}
 	
 	// Load tablefile values into arrays
@@ -124,6 +144,16 @@ bool gen_keys(char *init_key, FILE *table, unsigned char keys[16][6]) {
 	free(C);
 	free(D);
 	
+	return true;
+}
+
+// Returns true if the round keys are weak (palindromic), false otherwise
+bool is_weak_key(unsigned char keys[16][6]) {
+	for(int i=0; i<8; i++) {
+		if(strncmp((const char*)keys[i], (const char*)keys[15-i], 6) != 0) {
+			return false;
+		}
+	}
 	return true;
 }
 
@@ -342,6 +372,12 @@ void encrypt(char *key, FILE *table, FILE *input) {
 		return;
 	}
 	
+	// Make sure the user didn't use a weak key
+	if(is_weak_key(keys)) {
+		fprintf(stderr, "ERROR: the key provided is weak (palindromic) and easily broken.\n");
+		return;
+	}
+	
 	// Encrypt everything from input in 8 byte-block
 	bool first = true;
 	int size;
@@ -401,9 +437,4 @@ void encrypt(char *key, FILE *table, FILE *input) {
 	//   - Repeat this 16 times, except not swapping sides on round 16
 	//   - Perform the Inverse Initial Permutation on the final output
 	// - Print the 8-byte output from above, repeat until input complete
-	
-*	* CHECK FOR PALINDROMIC KEYS
-		- JUST PUT BIG IF STATEMENT LOOKING AT KEY, COMPARING IT TO KNOWN PALINDROMIC
-			KEYS/ITERATING THROUGH ROUND KEYS AND CHECKING IF THEY'RE IDENTICAL
-		- THROW ERROR IF THEY ARE PALINDROMIC*/
 }

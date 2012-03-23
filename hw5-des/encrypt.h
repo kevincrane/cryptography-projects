@@ -16,6 +16,9 @@
 // Generate an array of 16 48-bit keys from initial 64-bit key
 bool gen_keys(char *init_key, FILE *table, unsigned char keys[16][6]);
 
+// Returns true if the round keys are weak (palindromic), false otherwise
+bool is_weak_key(unsigned char keys[16][6]);
+
 // Encrypt a single 8-byte block of plaintext using the DES algorithm and the 16 round keys
 //	Stores result in cipher_block
 void encrypt_block(unsigned char* input, unsigned char* cipher_block, unsigned char keys[16][6], FILE* table, bool first);

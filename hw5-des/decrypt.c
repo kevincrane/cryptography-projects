@@ -40,7 +40,13 @@ void decrypt(char *key, FILE *table, FILE *input) {
 		return;
 	}
 	
-	// Encrypt everything from input in 8 byte-block
+	// Make sure the user didn't use a weak key
+	if(is_weak_key(keys)) {
+		fprintf(stderr, "ERROR: the key provided is weak (palindromic) and easily broken.\n");
+		return;
+	}
+	
+	// Decrypt everything from input in 8 byte-block
 	bool first = true;
 	int size;
 	while((size = fread(input_block, 1, 8, input))) {

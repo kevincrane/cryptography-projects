@@ -9,9 +9,9 @@
 //	using key3 as the encryption key (24-byte long and in hexstring format)
 void encrypt3(char *key, FILE *table, FILE *input) {
 	
-	char* init_key1 = (char*)malloc(16);
-	char* init_key2 = (char*)malloc(16);
-	char* init_key3 = (char*)malloc(16);
+	char* init_key1 = (char*)calloc(1,16);
+	char* init_key2 = (char*)calloc(1,16);
+	char* init_key3 = (char*)calloc(1,16);
 	unsigned char keys1[16][6] = { { 0 } };
 	unsigned char keys2[16][6] = { { 0 } };
 	unsigned char keys3[16][6] = { { 0 } };
@@ -38,6 +38,12 @@ void encrypt3(char *key, FILE *table, FILE *input) {
 	if(!(gen_keys(init_key1, table, keys1) && (gen_keys(init_key2, table, keys2)) 
 			&& (gen_keys(init_key3, table, keys3)))) {
 		fprintf(stderr, "ERROR: did not properly generate round keys.\n");
+		return;
+	}
+	
+	// Make sure the user didn't use a weak key
+	if(is_weak_key(keys1) || is_weak_key(keys2) || is_weak_key(keys3)) {
+		fprintf(stderr, "ERROR: one of the keys provided is weak (palindromic) and easily broken.\n");
 		return;
 	}
 	
