@@ -8,13 +8,13 @@ OUTPUT = hw1
 hw1: hexdump.o enc_base64.o dec_base64.o hw1.c
 	$(CC) $(FLAGS) hw1.c hexdump.o enc_base64.o dec_base64.o -o hw1
 	
-hexdump.o: hexdump.c
+hexdump.o: hexdump.c hexdump.h
 	$(CC) $(FLAGS) -c hexdump.c
 	
-enc_base64.o: enc_base64.c
+enc_base64.o: enc_base64.c enc_base64.h
 	$(CC) $(FLAGS) -c enc_base64.c
 	
-dec_base64.o: dec_base64.c
+dec_base64.o: dec_base64.c enc_base64.h
 	$(CC) $(FLAGS) -c dec_base64.c
 	
 	

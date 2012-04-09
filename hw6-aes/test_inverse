@@ -1,0 +1,43 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw6
+
+# Boilerplate constants
+set p0=430a8ff4
+set p1=ee790d2c
+set p2=812af697
+set p3=613eb046
+set p4=6df01677
+set p5=acab4c5e
+set p6=556103d4
+set p7=2d521621
+set p8=2ee56d4c
+set p9=4cac36b9
+
+#
+# (F) inverse (+20 points, +2 for each correct answer)
+#
+
+	set srcdir=~csci531/public/cs531/hw6
+	/bin/rm -f f?.inv
+
+        ./hw6 inverse -p=$p0 > f0.inv
+        ./hw6 inverse -p=$p1 > f1.inv
+        ./hw6 inverse -p=$p2 > f2.inv
+        ./hw6 inverse -p=$p3 > f3.inv
+        ./hw6 inverse -p=$p4 > f4.inv
+        ./hw6 inverse -p=$p5 > f5.inv
+        ./hw6 inverse -p=$p6 > f6.inv
+        ./hw6 inverse -p=$p7 > f7.inv
+        ./hw6 inverse -p=$p8 > f8.inv
+        ./hw6 inverse -p=$p9 > f9.inv
+
+	foreach f (0 1 2 3 4 5 6 7 8 9)
+		echo "==> $srcdir/f$f.inv"
+		diff f$f.inv $srcdir/f$f.inv
+	end
+
+	/bin/rm -f f?.inv

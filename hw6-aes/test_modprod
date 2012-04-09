@@ -1,0 +1,53 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw6
+
+# Boilerplate constants
+set p10=f183f2a4
+set p11=566a4baa
+set p12=71477d5c
+set p13=63dda331
+set p14=f3ada9de
+set p15=a07b030e
+set p16=33a77eda
+set p17=f7122f8c
+set p18=e9d8c095
+set p19=1e571881
+
+set p20=0d5fe07d
+set p21=bd61f322
+set p22=e45a5594
+set p23=69b832d1
+set p24=822742f9
+set p25=b9cf3a66
+set p26=65cf356f
+set p27=0c5a1939
+set p28=604adc54
+set p29=0e9e3654
+
+
+#
+# (B) modprod (+18 points, +2 for each correct answer)
+#
+/bin/rm -f f?.mp
+
+./hw6 modprod -p1=$p10 -p2=$p20 > f0.mp
+./hw6 modprod -p1=$p11 -p2=$p21 > f1.mp
+./hw6 modprod -p1=$p12 -p2=$p22 > f2.mp
+./hw6 modprod -p1=$p13 -p2=$p23 > f3.mp
+./hw6 modprod -p1=$p14 -p2=$p24 > f4.mp
+./hw6 modprod -p1=$p15 -p2=$p25 > f5.mp
+./hw6 modprod -p1=$p16 -p2=$p26 > f6.mp
+./hw6 modprod -p1=$p17 -p2=$p27 > f7.mp
+./hw6 modprod -p1=$p18 -p2=$p28 > f8.mp
+./hw6 modprod -p1=$p19 -p2=$p29 > f9.mp
+
+foreach f (0 1 2 3 4 5 6 7 8)
+	echo "==> $srcdir/f$f.mp"
+	diff f$f.mp $srcdir/f$f.mp
+end
+
+/bin/rm -f f?.mp
