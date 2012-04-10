@@ -1,0 +1,10 @@
+Note:
+I copied the original encrypt.c, decrypt.c, and their original header files to this folder.
+Because the homework assignment only required me to encrypt the first 16 bytes of the input
+and display the output at each step, the program felt unfinished. I modified the above files
+to fit the same format as the DES assignment, in that I print the state outputs to stderr
+after each operation on the first round, then repeat the block encryption throughout the
+rest of the input file. Because this is done using the ECB (Electronic Cookbook) style, it 
+was easy to quickly modify everything I needed to do this with a while loop.
+
+Kevin

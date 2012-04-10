@@ -34,7 +34,7 @@ void mix_columns(unsigned char state[4][4], unsigned char* poly);
 
 // Encrypts the input using AES-128 driven by tablefile; stores in output[4][4]
 void encrypt_block(unsigned char input_block[16], unsigned char output_block[16],
-		unsigned char round_key[44][4], FILE* table, bool first);
+		unsigned char round_key[44][4], FILE* table);
 
 // Encrypts the input using AES driven by tablefile in the ECB mode using key 
 //	as the encryption key (16-byte long and in hexstring format)

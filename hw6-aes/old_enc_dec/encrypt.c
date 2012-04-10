@@ -6,35 +6,30 @@
 
 
 // Prints the current contents of the state, plus a line header
-void print_state(unsigned char state[4][4], int round, const char* header, bool first) {
-	// If not first block in encryption, don't print
-	if(!first) {
-		return;
-	}
-	
+void print_state(unsigned char state[4][4], int round, const char* header) {
 	// Print line header
 	if(round < 10) {
-		fprintf(stderr, "round[ %d].%s    ", round, header);
+		printf("round[ %d].%s    ", round, header);
 	} else {
 		if(strcmp(header, "output") == 0) {
-			fprintf(stderr, "round[%d].%s   ", round, header);
+			printf("round[%d].%s   ", round, header);
 		} else {
-			fprintf(stderr, "round[%d].%s    ", round, header);
+			printf("round[%d].%s    ", round, header);
 		}
 	}
 	// Print byte values
 	if(strcmp(header, "k_sch") == 0) {
 		// Print left to right, top to bottom for keys
 		for(int i=0; i<16; i++) {
-			fprintf(stderr, "%02x", state[i/4][i%4]);
+			printf("%02x", state[i/4][i%4]);
 		}
 	} else {
 		// Print top to bottom, left to right for states
 		for(int i=0; i<16; i++) {
-			fprintf(stderr, "%02x", state[i%4][i/4]);
+			printf("%02x", state[i%4][i/4]);
 		}
 	}
-	fprintf(stderr, "\n");
+	printf("\n");
 }
 
 
@@ -112,7 +107,7 @@ void mix_columns(unsigned char state[4][4], unsigned char* poly) {
 
 // Encrypts the input using AES-128 driven by tablefile; stores in output[4][4]
 void encrypt_block(unsigned char input_block[16], unsigned char output_block[16],
-		unsigned char round_key[44][4], FILE* table, bool first) {
+		unsigned char round_key[44][4], FILE* table) {
 	
 	unsigned char state[4][4] = { { 0 } };	// Carries state of block through encryption
 	unsigned char* poly = (unsigned char*)calloc(1,4);
@@ -128,56 +123,57 @@ void encrypt_block(unsigned char input_block[16], unsigned char output_block[16]
 	}
 	
 	// Print initial inputs and key schedule
-	print_state(state, 0, "input", first);
-	print_state(round_key, 0, "k_sch", first);
+	print_state(state, 0, "input");
+	print_state(round_key, 0, "k_sch");
 	
 	// Add initial round key
 	add_round_key(state, round_key, 0);
 	
 	// Perform operations for rounds 1 to 9
 	for(int i=1; i<10; i++) {
-		print_state(state, i, "start", first);
+		print_state(state, i, "start");
 		
 		// Substitute Bytes
 		sub_bytes(state, s_box);
-		print_state(state, i, "s_box", first);
+		print_state(state, i, "s_box");
 		
 		// Shift Rows
 		shift_rows(state);
-		print_state(state, i, "s_row", first);
+		print_state(state, i, "s_row");
 		
 		// Mix Columns
 		mix_columns(state, poly);
-		print_state(state, i, "m_col", first);
+		print_state(state, i, "m_col");
 		
 		// Add Round Key
 		add_round_key(state, round_key, i);
-		print_state(&(round_key[4*i]), i, "k_sch", first);
+		print_state(&(round_key[4*i]), i, "k_sch");
 	}
 	
 	// Final round operations
-	print_state(state, 10, "start", first);
+	print_state(state, 10, "start");
 	
 	// Substitute Bytes
 	sub_bytes(state, s_box);
-	print_state(state, 10, "s_box", first);
+	print_state(state, 10, "s_box");
 	
 	// Shift Rows
 	shift_rows(state);
-	print_state(state, 10, "s_row", first);
+	print_state(state, 10, "s_row");
 	
 	// Add Round Key
 	add_round_key(state, round_key, 10);
-	print_state(&(round_key[4*10]), 10, "k_sch", first);
+	print_state(&(round_key[4*10]), 10, "k_sch");
 	
 	// Store final state value in output_block, done
 	for(int i=0; i<16; i++) {
 		output_block[i] = state[i%4][i/4];
 	}
-	print_state(state, 10, "output", first);
+	print_state(state, 10, "output");
 	
 	free(poly);
 	free(s_box);
+	
 }
 
 
@@ -221,34 +217,18 @@ void encrypt(char *key_chars, FILE *table, FILE *input) {
 	// Perform key expansion and store result in round_key
 	key_expansion(init_key, round_key, table);
 	
-/*	// Read first 16 bytes from input text
+	// Read first 16 bytes from input text
 	if(fread(input_block, 1, 16, input) < 16) {
 		fprintf(stderr, "ERROR: input file was less than 16 bytes long.\n");
 		return;
-	}*/
-	
-	// Encrypt everything from input in 16-byte block
-	bool first = true;
-	int size;
-	while((size = fread(input_block, 1, 16, input))) {
-		if((*input_block == '\n') && (size == 1))
-			continue;
-			
-		// Encrypt a single block using AES-128
-		encrypt_block(input_block, cipher_block, round_key, table, first);
-		
-		// Print current cipher block values to output
-		for(int i=0; i<16; i++) {
-			printf("%c", cipher_block[i]);
-		}
-		
-		// Reset blocks for next iteration
-		first = false;
-		for(int i=0; i<16; i++) {
-			input_block[i] = 0x00;
-			cipher_block[i] = 0x00;
-		}
 	}
+	
+	// Perform AES encryption on a single block
+	//	Easy to modify to encrypt whole document
+	//		- Send print statements to stderr in encrypt_block, print output_block to stdout
+	//		- Read 16 bytes, encrypt, repeat, until nothing left to read
+	encrypt_block(input_block, cipher_block, round_key, table);
+	
 	
 	free(init_key);
 	free(input_block);
@@ -269,5 +249,4 @@ void encrypt(char *key_chars, FILE *table, FILE *input) {
 	// - For the 10th round, repeat this process, but skip Mix Columns
 	// - Store the finanl result of the state in the output_block array
 	// - Print this somewhere, clear it, and repeat if you wanted to go for longer than 16-bytes of input
-	// EDIT: modified to encrypt entire input with AES-128. Prints state outputs to stderr on first block.
 }

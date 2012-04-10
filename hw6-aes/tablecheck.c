@@ -106,21 +106,37 @@ bool check_p(FILE* table) {
 	
 	// Split P and INVP into 4 bytes each
 	char temp_val[3];
+	if(strlen(p_buf) != (strlen("P=")+8)) {
+		fprintf(stderr, "ERROR: polynomial must consist of exactly 8 characters.\n");
+		return false;
+	} else if(strlen(invp_buf) != (strlen("INVP=")+8)) {
+		fprintf(stderr, "ERROR: inverse polynomial must consist of exactly 8 characters.\n");
+		return false;
+	}
 	for(int i=0; i<4; i++) {
 		temp_val[0] = *(p_buf+strlen("P=") + i*2);
 		temp_val[1] = *(p_buf+strlen("P=") + i*2+1);
 		temp_val[2] = ' ';
+		if(!is_hex_char(temp_val[0]) || !is_hex_char(temp_val[1])) {
+			fprintf(stderr, "ERROR: all characters in polynomial must be hex values.\n");
+			return false;
+		}
 		p1[i] = strtol(temp_val, NULL, 16);
+		
 		temp_val[0] = *(invp_buf+strlen("INVP=") + i*2);
 		temp_val[1] = *(invp_buf+strlen("INVP=") + i*2+1);
 		temp_val[2] = ' ';
+		if(!is_hex_char(temp_val[0]) || !is_hex_char(temp_val[1])) {
+			fprintf(stderr, "ERROR: all characters in inverse polynomial must be hex values.\n");
+			return false;
+		}
 		p2[i] = strtol(temp_val, NULL, 16);
 	}
 	
 	// Perform MODPROD operation on the two polys read, verify that they are inverses
 	get_modprod(p1, p2, out_buf);
 	
-	if((out_buf[0] != 0x00) || (out_buf[1] != 0x00) || (out_buf[2] != 0x00) || (out_buf[3] != 0x01)) { //strcmp((const char*)out_buf, 0x00000001) != 0) {
+	if((out_buf[0] != 0x00) || (out_buf[1] != 0x00) || (out_buf[2] != 0x00) || (out_buf[3] != 0x01)) {
 		fprintf(stderr, "ERROR: modprod coefficients were {%02x}{%02x}{%02x}{%02x}; invalid inverse poly.\n", 
 				out_buf[0], out_buf[1], out_buf[2], out_buf[3]);
 		return false;
@@ -162,5 +178,5 @@ bool tablecheck(FILE *table) {
 	// - Very P/INVP Values
 	//   - Check that each of the two polynomials are the proper length and only hexchars
 	//   - Plug these two polynomials into the modprod function and make sure that the 
-	//     output is {00}{00}{00{01}
+	//     output is {00}{00}{00}{01}
 }
