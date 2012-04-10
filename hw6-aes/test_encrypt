@@ -1,0 +1,43 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw6
+
+# Boilerplate constants
+set k0=4c1a7217a218cf6daa603c4a39736301
+set k1=045a77611c9461c0bc6a82f746820642
+set k2=379842734c2da8b5000cd46fac876344
+set k3=4570e90ccb0510ea2322a63864d71d0f
+set k4=f939198ba70f0d89190fd0982a469c1d
+set k5=22b25dbe1b6f050377899905bea5dd89
+set k6=3b8ea56b186ffed06f256bb10c511542
+set k7=7bf788f82a5048ddd465bd35adf8aab1
+set k8=0de363df22aa85691fb4f5aafe4c27bc
+set k9=dd7125d83dddb15ff81272c7af81d7c1
+
+#
+# (D) encrypt (+20 points, +2 for each correct answer)
+#
+
+/bin/rm -f f?.enc
+
+./hw6 encrypt -k=$k0 -t=$srcdir/f0.tbl $srcdir/f0 > f0.enc
+./hw6 encrypt -k=$k1 -t=$srcdir/f1.tbl $srcdir/f1 > f1.enc
+./hw6 encrypt -k=$k2 -t=$srcdir/f2.tbl $srcdir/f2 > f2.enc
+./hw6 encrypt -k=$k3 -t=$srcdir/f3.tbl $srcdir/f3 > f3.enc
+./hw6 encrypt -k=$k4 -t=$srcdir/f4.tbl $srcdir/f4 > f4.enc
+
+cat $srcdir/f5 | ./hw6 encrypt -k=$k5 -t=$srcdir/f5.tbl > f5.enc
+cat $srcdir/f6 | ./hw6 encrypt -k=$k6 -t=$srcdir/f6.tbl > f6.enc
+cat $srcdir/f7 | ./hw6 encrypt -k=$k7 -t=$srcdir/f7.tbl > f7.enc
+cat $srcdir/f8 | ./hw6 encrypt -k=$k8 -t=$srcdir/f8.tbl > f8.enc
+cat $srcdir/f9 | ./hw6 encrypt -k=$k9 -t=$srcdir/f9.tbl > f9.enc
+
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	echo "==> $srcdir/f$f.enc"
+	diff f$f.enc $srcdir/f$f.enc
+end
+
+/bin/rm -f f?.enc

@@ -21,23 +21,22 @@ set p9=4cac36b9
 # (F) inverse (+20 points, +2 for each correct answer)
 #
 
-	set srcdir=~csci531/public/cs531/hw6
-	/bin/rm -f f?.inv
+/bin/rm -f f?.inv
 
-        ./hw6 inverse -p=$p0 > f0.inv
-        ./hw6 inverse -p=$p1 > f1.inv
-        ./hw6 inverse -p=$p2 > f2.inv
-        ./hw6 inverse -p=$p3 > f3.inv
-        ./hw6 inverse -p=$p4 > f4.inv
-        ./hw6 inverse -p=$p5 > f5.inv
-        ./hw6 inverse -p=$p6 > f6.inv
-        ./hw6 inverse -p=$p7 > f7.inv
-        ./hw6 inverse -p=$p8 > f8.inv
-        ./hw6 inverse -p=$p9 > f9.inv
+./hw6 inverse -p=$p0 > f0.inv
+./hw6 inverse -p=$p1 > f1.inv
+./hw6 inverse -p=$p2 > f2.inv
+./hw6 inverse -p=$p3 > f3.inv
+./hw6 inverse -p=$p4 > f4.inv
+./hw6 inverse -p=$p5 > f5.inv
+./hw6 inverse -p=$p6 > f6.inv
+./hw6 inverse -p=$p7 > f7.inv
+./hw6 inverse -p=$p8 > f8.inv
+./hw6 inverse -p=$p9 > f9.inv
 
-	foreach f (0 1 2 3 4 5 6 7 8 9)
-		echo "==> $srcdir/f$f.inv"
-		diff f$f.inv $srcdir/f$f.inv
-	end
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	echo "==> $srcdir/f$f.inv"
+	diff f$f.inv $srcdir/f$f.inv
+end
 
-	/bin/rm -f f?.inv
+/bin/rm -f f?.inv

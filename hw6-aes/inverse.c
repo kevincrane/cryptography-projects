@@ -9,7 +9,7 @@
 //	through AES' finite fielld (mod x^4 + 1)
 void init_inv_table(unsigned char inv_table[256]) {
 	// Hardcoded table of multiplicative inverses
-	char* table_list = (char*)calloc(1, 256);
+	char* table_list;// = (char*)calloc(1, 256);
 	table_list = (char*)"00018df6cb527bd1e84f29c0b0e1e5c7\
 74b4aa4b992b605f583ffdccff40eeb2\
 3a6e5af1554da8c9c10a98153044a2c2\
@@ -56,26 +56,24 @@ void get_inverse(unsigned char poly[4], unsigned char inv_table[256], unsigned c
 	// Iterate up to 4 more times, computing rem, quo, and aux; find inv_poly if applicable
 	for(int i=2; i<6; i++) {
 		// Super shitty code, but I've spent hours looking at how to do this and I'm tired.
+		// First half of quotient
 		unsigned char temp_math[6-i];
 		quo[i][2] = mult(inv_table[ rem[i-1][i-1] ], rem[i-2][i-2]);
 		for(int j=0; j<(6-i); j++) {
 			temp_math[j] = rem[i-2][j+i-1] ^ mult( rem[i-1][j+i], quo[i][2] );
 		}
 		
+		// Second half of quotient
 		if(i<5) {
 			temp_math[5-i] = rem[i-2][4];
 			quo[i][3] = mult(inv_table[ rem[i-1][i-1] ], temp_math[0]);
 		} else {
 			// Find value of end of quotient that leads to remainder of 0x01
-			for(int k=0; k<256; k++) {
-				if((mult(rem[i-1][i-1], k) ^ temp_math[0]) == 0x01) {
-					quo[i][3] = k;
-					break;
-				}
-			}
+			quo[i][3] = mult(inv_table[ rem[i-1][i-1] ], temp_math[0]^0x01);
 			rem[i][i-1] = 0x01;
 		}
 		
+		// Compute remainder from quotient and previous remainders
 		for(int j=i; j<5; j++) {
 			rem[i][j] = temp_math[j-i+1] ^ mult( rem[i-1][j], quo[i][3] );
 		}
@@ -93,7 +91,7 @@ void get_inverse(unsigned char poly[4], unsigned char inv_table[256], unsigned c
 			aux[i][0], aux[i][1], aux[i][2], aux[i][3]);
 		
 		// Invalid coefficient, no inverse
-		if(rem[i][i] == 0x00 && i != 5) {
+		if(i != 5 && rem[i][i] == 0x00) {
 			printf("{%02x}{%02x}{%02x}{%02x} does not have a multiplicative inverse.\n", 
 					poly[0], poly[1], poly[2], poly[3]);
 			return;
