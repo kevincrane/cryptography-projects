@@ -1,0 +1,110 @@
+Kevin Crane
+ID#: 3218-2771-59
+CSCI-531 
+Homework 6 - AES (Advanced Encryption Standard)
+
+1. Use
+	- Compile with:
+		make hw6
+	- Check the integrity of tablefile
+		./hw6 tablecheck -t=tablefile
+	- Perform modular product (modulo {01}x^4+{01}) of two polynomials with coefficients in GF(2^8)
+		./hw6 modprod -p1=poly1 -p2=poly2
+	- Perform the key expansion algorithm for AES-128 using key as the 16-byte cipher key in hexstring format
+		./hw6 keyexpand -k=key -t=tablefile
+	- Encrypts the first 16 bytes of the input using AES-128 driven by tablefile in the ECB mode using key as the encryption key
+		./hw6 encrypt -k=key -t=tablefile [file]
+	- Decrypts the first 16 bytes of the input using AES-128 driven by tablefile in the ECB mode using key as the encryption key
+		./hw6 decrypt -k=key -t=tablefile [file]
+	- Calculate the multiplicative inverse (modulo {01}x^4+{01}) of poly with GF(2^8) coefficients using extended Euclidean algorithm
+		./hw6 inverse -p=poly
+	- Clean binary files with:
+		make clean
+
+2. Design
+	- Tablecheck
+		- Verify S Values
+			- Convert every pair of hexchars into a byte value
+			- Increment value for that particular byte in 256-val array
+			- Verify that each value in array occurs exactly once
+		- Very P/INVP Values
+			- Check that each of the two polynomials are the proper length and only hexchars
+			- Plug these two polynomials into the modprod function and make sure that the 
+				output is {00}{00}{00}{01}
+	- Modprod
+		- Read each of the hexchars into the byte values for 2 char arrays
+		- Given the coefficients in each of the polys:
+			- Mult and XOR each coefficient in a particular hard-coded order to 
+				get the new coefficients (indicated in FIPS-197, eq. 4.12)
+			- XOR Op
+				- Easy, already defined by C language
+			- Mult Op
+				- In steps[0], store coef1
+				- In steps[i], store xtime(steps[i-1]), for steps [1, log2(coef2)+1]
+				- Each index in steps corresponds to 2^i
+				- Starting from i=log2(coef2), step backwards to 0
+					- Build sum equal to coef2 using values of 2^i
+					- Whenever you use 2^i to build sum, XOR steps[i] into the running product
+				- Return the product
+			- Store these coefficients in out_coef[4] for outside use
+	- Keyexpand
+		- Initialize the S-box and Rcon
+			- For the S-box, read in the tablefile; incrementally assign the permutations to a 256-byte array
+			- For Rcon, starting with rcon[0]=0x8d, modularly mult rcon[i-1] by 0x02 until you have 256 vals
+		- (For AES-128: Nk=4, Nr=10, key is 16 bytes long)
+		- For the first 4 rounds, the round_key is one quarter of the init_key
+		- For the remainder of the rounds (4*(Nr+1) total):
+			- Every 4th round:
+				- Rotate the round_key circularly to the left and store in temp val
+				- Put the temp val through the s_box and XOR the MSB with the next val of Rcon
+			- For every round, XOR the current temp vals with the previous round_key, store as next round_key
+		- Print the output of each round_key
+	- Encrypt
+		- Break the input into 16-byte blocks (for this assignment, only one block encrypted)
+		- Store this block into a 4x4 byte array called the state (arrangement dictated in FIPS-197)
+		- Initialized S-box and perform key expansion
+		- Do an initial add_round_key on the input
+		- For 9 rounds, perform the following operations:
+			- Substitute Bytes - Substitute based on permutation of bytes in S-box
+			- Shift Rows - Circularly rotate the bytes in each row to the left by a certain number of spaces
+			- Mix Columns - Multiply the values in columns by the coefficients of a 
+					polynomial, XOR each result to get new col values
+			- Add Round Key - XOR the next set of round keys onto the state matrix
+		- For the 10th round, repeat this process, but skip Mix Columns
+		- Store the finanl result of the state in the output_block array
+		- Print this somewhere, clear it, and repeat if you wanted to go for longer than 16-bytes of input
+	- Decrypt
+		- Same as AES-128 encrypt, except for a few minor changes:
+			- The S-box needs to be inverted before it can be used for substitution
+			- You use the inverse polynomial instead of the original for mix_columns
+			- During shift_rows, you shift each row to the right instead of the left
+			- The round keys are used in reverse order
+		- The order of core operations is also slightly different
+			- Inv Shift Columns
+			- Substitute Bytes (inverse S-box)
+			- Add Round Key
+			- Mix Columns (inverse polynomial)
+	- Inverse
+		- Initialize the table of inverses for bytes in the AES finite field
+		- Convert the 8 hexchars of input into 4 bytes of poly coefficients
+		- Given the input polynomial and inv_table, compute the inverse polynomial
+			- Print the first 2 lines of output (more or less the same depending on polynomial)
+			- Using janky, awkward math perform long division with polynomials each round
+				- Use inv_table to determine what to mult divisor by to eliminate first term
+				- XOR add this term and repeat with this (temp_math)
+				- This will give quotient (2 bytes) and remainder (one fewer byte than the prior round)
+				- Compute aux[i] for this round with: modprod(quo[i], aux[i-1]) - aux[i-2]
+			- Repeat up to 4 times (6 total rounds max) with smaller and smaller remainders
+			- Eventually remainder should end up as 0x00000001. Done, output aux[6] and be done
+			* If remainder becomes 0x00000000, this polynomial has no inverse and should be ended
+
+3. Known Bugs
+	- None known
+
+4. Deviation from the specs
+	- None known
+	
+5. References
+	- Simple line of code for computing xtime of a value (in modprod.c)
+		- Obtained from http://www.koders.com/c/fid8132B6BE3179A9AC8E48424AA876967924DF90FB.aspx?s=crc
+

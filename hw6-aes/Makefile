@@ -20,7 +20,7 @@ keyexpand.o: keyexpand.c keyexpand.h
 encrypt.o: encrypt.c encrypt.h
 	$(CC) $(FLAGS) -c encrypt.c
 	
-decrypt.o: decrypt.c encrypt.h
+decrypt.o: decrypt.c decrypt.h
 	$(CC) $(FLAGS) -c decrypt.c
 	
 inverse.o: inverse.c inverse.h
