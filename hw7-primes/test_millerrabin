@@ -1,0 +1,46 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw7
+
+# Boilerplate constants
+set n0=604235199
+set n1=563922877
+set n2=861239407
+set n3=560704847
+set n4=941251117
+set n5=706698887
+set n6=712147925
+set n7=694912855
+set n8=546186413
+set n9=1023309743
+set n10=666329337136979687
+
+#
+# (C) millerrabin (+22 points, +1 for each correct answer)
+#
+
+/bin/rm -f f?.mr f??.mr
+
+set pf=$srcdir/primes.n223
+
+./hw7 millerrabin -n=$n0 -t=12 -p=$pf > f0.mr
+./hw7 millerrabin -n=$n1 -t=12 -p=$pf > f1.mr
+./hw7 millerrabin -n=$n2 -t=12 -p=$pf > f2.mr
+./hw7 millerrabin -n=$n3 -t=12 -p=$pf > f3.mr
+./hw7 millerrabin -n=$n4 -t=12 -p=$pf > f4.mr
+./hw7 millerrabin -n=$n5 -t=12 -p=$pf > f5.mr
+./hw7 millerrabin -n=$n6 -t=12 -p=$pf > f6.mr
+./hw7 millerrabin -n=$n7 -t=12 -p=$pf > f7.mr
+./hw7 millerrabin -n=$n8 -t=12 -p=$pf > f8.mr
+./hw7 millerrabin -n=$n9 -t=12 -p=$pf > f9.mr
+./hw7 millerrabin -n=$n10 -t=12 -p=$pf > f10.mr
+
+foreach f (0 1 2 3 4 5 6 7 8 9 10)
+	echo "==> $srcdir/f$f.mr"
+	diff f$f.mr $srcdir/f$f.mr
+end
+
+/bin/rm -f f?.mr f??.mr

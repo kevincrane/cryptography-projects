@@ -1,0 +1,44 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw7
+
+# Boilerplate constants
+set m0=23
+set m1=230
+set m2=2300
+set m3=23000
+set m4=230000
+set m5=31
+set m6=310
+set m7=3100
+set m8=31000
+set m9=310000
+set m10=1000000
+
+#
+# (A) primes (+11 points, +1 points for each correct case)
+#
+
+/bin/rm -f f?.pms f??.pms
+
+./hw7 primes -n=$m0 > f0.pms
+./hw7 primes -n=$m1 > f1.pms
+./hw7 primes -n=$m2 > f2.pms
+./hw7 primes -n=$m3 > f3.pms
+./hw7 primes -n=$m4 > f4.pms
+./hw7 primes -n=$m5 > f5.pms
+./hw7 primes -n=$m6 > f6.pms
+./hw7 primes -n=$m7 > f7.pms
+./hw7 primes -n=$m8 > f8.pms
+./hw7 primes -n=$m9 > f9.pms
+./hw7 primes -n=$m10 > f10.pms
+
+foreach f (0 1 2 3 4 5 6 7 8 9 10)
+	echo "==> $srcdir/f$f.pms"
+	diff f$f.pms $srcdir/f$f.pms
+end
+
+/bin/rm -f f?.pms f??.pms

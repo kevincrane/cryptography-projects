@@ -8,9 +8,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <arpa/inet.h>
 
 
 // Test the primality of number using the Miller-Rabin algorithm
-void millerrabin(char* number, int maxitr, FILE* primesfile);
+bool millerrabin(char* number, int maxitr, FILE* primesfile, const char* lead_space="");
 
 #endif

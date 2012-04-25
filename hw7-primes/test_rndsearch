@@ -1,0 +1,47 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw7
+
+# Boilerplate constants
+set k0=15
+set k1=18
+set k2=21
+set k3=24
+set k4=27
+set k5=30
+set k6=33
+set k7=36
+set k8=39
+set k9=42
+set k10=45
+
+#
+# (D) rndsearch (+22 points, +2 for each correct answer)
+#
+
+/bin/rm -f f?.rs f??.rs
+
+set pf=$srcdir/primes.n223
+set rf=$srcdir/rnd.220
+
+./hw7 rndsearch -k=$k0 -t=10 -p=$pf -r=$rf > f0.rs
+./hw7 rndsearch -k=$k1 -t=10 -p=$pf -r=$rf > f1.rs
+./hw7 rndsearch -k=$k2 -t=10 -p=$pf -r=$rf > f2.rs
+./hw7 rndsearch -k=$k3 -t=10 -p=$pf -r=$rf > f3.rs
+./hw7 rndsearch -k=$k4 -t=10 -p=$pf -r=$rf > f4.rs
+./hw7 rndsearch -k=$k5 -t=10 -p=$pf -r=$rf > f5.rs
+./hw7 rndsearch -k=$k6 -t=10 -p=$pf -r=$rf > f6.rs
+./hw7 rndsearch -k=$k7 -t=10 -p=$pf -r=$rf > f7.rs
+./hw7 rndsearch -k=$k8 -t=10 -p=$pf -r=$rf > f8.rs
+./hw7 rndsearch -k=$k9 -t=10 -p=$pf -r=$rf > f9.rs
+./hw7 rndsearch -k=$k10 -t=10 -p=$pf -r=$rf > f10.rs
+
+foreach f (0 1 2 3 4 5 6 7 8 9 10)
+	echo "==> $srcdir/f$f.rs"
+	diff f$f.rs $srcdir/f$f.rs
+end
+
+/bin/rm -f f?.rs f??.rs

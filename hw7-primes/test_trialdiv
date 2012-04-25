@@ -1,0 +1,45 @@
+#!/usr/bin/env tcsh
+
+# MUST BE RUN FROM nunki.usc.edu, OTHERWISE IT DOESN'T KNOW
+#   WHERE TO FIND THE NEEDED TEST FILES
+
+set srcdir=~csci531/public/cs531/hw7
+
+# Boilerplate constants
+set n0=604235199
+set n1=563922877
+set n2=861239407
+set n3=560704847
+set n4=941251117
+set n5=706698887
+set n6=712147925
+set n7=694912855
+set n8=546186413
+set n9=1023309743
+set n10=666329337136979687
+
+#
+# (B) trialdiv (+20 points, +2 for each correct answer)
+#
+
+/bin/rm -f f?.td
+
+set pf=$srcdir/primes.n223
+
+./hw7 trialdiv -n=$n0 -p=$pf > f0.td
+./hw7 trialdiv -n=$n1 -p=$pf > f1.td
+./hw7 trialdiv -n=$n2 -p=$pf > f2.td
+./hw7 trialdiv -n=$n3 -p=$pf > f3.td
+./hw7 trialdiv -n=$n4 -p=$pf > f4.td
+./hw7 trialdiv -n=$n5 -p=$pf > f5.td
+./hw7 trialdiv -n=$n6 -p=$pf > f6.td
+./hw7 trialdiv -n=$n7 -p=$pf > f7.td
+./hw7 trialdiv -n=$n8 -p=$pf > f8.td
+./hw7 trialdiv -n=$n9 -p=$pf > f9.td
+
+foreach f (0 1 2 3 4 5 6 7 8 9)
+	echo "==> $srcdir/f$f.td"
+	diff f$f.td $srcdir/f$f.td
+end
+
+/bin/rm -f f?.td

@@ -8,9 +8,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <math.h>
+#include <arpa/inet.h>
 
 
 // Test the primality of number using trial division by trying sequentially all small prime numbers
-void trialdiv(char* number, FILE* primesfile);
+bool trialdiv(char* number, FILE* primesfile);
 
 #endif

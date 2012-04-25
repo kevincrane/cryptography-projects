@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <openssl/crypto.h>
+#include <openssl/bn.h>
 
 #include "primes.h"
 #include "trialdiv.h"
@@ -106,7 +108,7 @@ int main(int argc, char *argv[]) {
 				}
 			}
 			if(number && primesfile && maxitr > 0) {
-				millerrabin(number, maxitr, primesfile);
+				millerrabin(number, maxitr, primesfile, "");
 				fclose(primesfile);
 			} else {
 				usage("millerrabin");

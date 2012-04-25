@@ -4,18 +4,19 @@
 CC = g++
 FLAGS = -Wall -g
 OUTPUT = hw7
+OPENSSL_LINK = -lcrypto
 
-hw7: primes.o trialdiv.o millerrabin.o rndsearch.o maurer.o
-	$(CC) $(FLAGS) primes.o trialdiv.o millerrabin.o rndsearch.o maurer.o hw7.c -o $(OUTPUT)
+hw7: primes.o trialdiv.o millerrabin.o rndsearch.o maurer.o hw7.c
+	$(CC) $(FLAGS) primes.o trialdiv.o millerrabin.o rndsearch.o maurer.o hw7.c $(OPENSSL_LINK) -o $(OUTPUT)
 	
 primes.o: primes.c primes.h
 	$(CC) $(FLAGS) -c primes.c
 	
 trialdiv.o: trialdiv.c trialdiv.h
-	$(CC) $(FLAGS) -c trialdiv.c
+	$(CC) $(FLAGS) $(OPENSSL_LINK) -c trialdiv.c
 	
 millerrabin.o: millerrabin.c millerrabin.h
-	$(CC) $(FLAGS) -c millerrabin.c
+	$(CC) $(FLAGS) $(OPENSSL_LINK) -c millerrabin.c
 	
 rndsearch.o: rndsearch.c rndsearch.h
 	$(CC) $(FLAGS) -c rndsearch.c
