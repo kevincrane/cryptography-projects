@@ -28,6 +28,12 @@ bool millerrabin(char* number, int maxitr, FILE* primesfile, const char* lead_sp
 	unsigned int* prime = (unsigned int*)calloc(sizeof(unsigned int), 1);
 	fseek(primesfile, sizeof(unsigned int), SEEK_SET);
 	
+	// Verify number is actually number
+	if(!is_number(number)) {
+		fprintf(stderr, "ERROR: character string for number needs to be all digits.\n");
+		return false;
+	}
+	
 	// Initialize BigNums
 	BIGNUM* num = NULL;
 	BIGNUM* a_val = BN_new();
@@ -111,5 +117,20 @@ bool millerrabin(char* number, int maxitr, FILE* primesfile, const char* lead_sp
 		
 	
 	// PSEUDO-CODE
-	// - 
+	// - Tests the primality of a number using the following algorithm:
+	// - Miller-Rabin(n,maxitr):
+	// 1) write n-1 = 2sr such that r is odd
+	// 2) for (i=1; i <= maxitr; i++) {
+	//    2.1) a = the ith smallest prime number
+	// 	    2.1.1) if (a > n-1) return("failure")
+	//    2.2) compute y = ar mod n
+	//    2.3) if (y != 1 and y != n-1) {
+	// 	    2.3.1) for (j=1; j <= s-1 and y != n-1; j++) {
+	// 	           2.3.1.1) y = y2 mod n
+	// 	           2.3.1.2) if (y == 1) return("composite")
+	// 	           }
+	// 	    2.3.2) if (y != n-1) return("composite")
+	// 	    }
+	//    }
+	// 3) return("prime")
 }

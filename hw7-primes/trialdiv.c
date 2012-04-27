@@ -8,6 +8,16 @@
 #include "trialdiv.h"
 
 
+// Returns true if the character string is all digits
+bool is_number(char* string) {
+	for(unsigned int i=0; i<strlen(string); i++) {
+		if(string[i] < '0' || string[i] > '9') {
+			return false;
+		}
+	}
+	return true;
+}
+
 // Returns true if num%factor == 0, using BigNum
 bool is_factor(BIGNUM* num, unsigned int factor, BN_CTX* ctx) {
 	BIGNUM* fac = NULL;
@@ -41,6 +51,12 @@ bool trialdiv(char* number, FILE* primesfile) {
 	BN_CTX* ctx = BN_CTX_new();
 	BN_dec2bn(&num, number);
 	
+	// Verify number is actually number
+	if(!is_number(number)) {
+		fprintf(stderr, "ERROR: character string for number needs to be all digits.\n");
+		return false;
+	}
+	
 	// Verify that maxval is big enough to provide enough primes
 	fseek(primesfile, 0, SEEK_SET);
 	fread(factor, sizeof(unsigned int), 1, primesfile);
@@ -65,7 +81,6 @@ bool trialdiv(char* number, FILE* primesfile) {
 	if(BN_cmp(maxval, num) <= 0) {
 		// Not enough values in primesfile
 		printf("n passes trial division test (not enough primes)\n");
-		return false;
 	} else {
 		// Value is prime
 		printf("n passes trial division test\n");
@@ -80,5 +95,10 @@ bool trialdiv(char* number, FILE* primesfile) {
 	
 	
 	// PSEUDO-CODE
-	// - 
+	// - Reads prime numbers one at a time from a binary file, primesfile
+	// - Divides the number to be tested by each prime number
+	//   - If the remainder is 0 and the number != the prime, return false (it's a composite)
+	// - If by the end of the primesfile, nothing evenly divides into it:
+	//   - If the number is larger than the square of the maxval of the primesfile, return true (not enough primes)
+	//   - Otherwise, return true (it's a prime)
 }

@@ -20,13 +20,11 @@ void RndOddNum(int numbits, BIGNUM* odd_num, FILE* rndfile) {
 	}
 	
 	BN_bin2bn(num_read, num_bytes, odd_num);
-//	printf("BEFORE=%s\n", BN_bn2dec(odd_num));
 	BN_set_bit(odd_num, 0);
 	BN_set_bit(odd_num, numbits-1);
 	for(int i=numbits; i<num_bytes*8; i++) {
 		BN_clear_bit(odd_num, i);
 	}
-//	printf("AFTER=%s\n", BN_bn2dec(odd_num));
 	
 	free(num_read);
 }
@@ -62,8 +60,17 @@ void rndsearch(int numbits, int maxitr, FILE* primesfile, FILE* rndfile) {
 		count++;
 	}
 	
+	BN_free(num_orig);
 	free(num_trimmed);
 	
+	
 	// PSEUDO-CODE
-	// - 
+	// - Generate a random numbit-bit number
+	//   - Read ceil(numbit/8) bytes from the random file
+	//   - Set bits 0 and numbit-1 to 1
+	//   - Set bits numbit to ceil(numbit/8)*8 to 0
+	// - Run the Trial Division test
+	// - If it passes, run the Miller-Rabin test
+	// - If it passes that too, return that prime number
+	// - If it fails either test, return to the beginning and try a new number
 }
